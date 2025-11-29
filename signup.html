@@ -1,8 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Signup - Election Monitoring System</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Sign Up | Election System</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 </head>
 
@@ -11,46 +13,48 @@
 <div class="login-box">
   <h2>Create Account</h2>
 
-  <input type="text" id="signupName" placeholder="Full Name" required>
-  <input type="email" id="signupEmail" placeholder="Email" required>
-  <input type="password" id="signupPassword" placeholder="Password" required>
+  <input type="text" id="signupName" placeholder="Full Name" required />
+  <input type="email" id="signupEmail" placeholder="Email" required />
+  <input type="password" id="signupPassword" placeholder="Password" required />
 
   <select id="signupRole" required>
-    <option value="" disabled selected>Select Role</option>
-    <option value="admin">Admin</option>
+    <option disabled selected>Select Role</option>
     <option value="citizen">Citizen</option>
-    <option value="observer">Observer</option>
+    <option value="observer">Election Observer</option>
     <option value="analyst">Data Analyst</option>
   </select>
 
-  <button onclick="signup()">Signup</button>
+  <button onclick="registerUser()">Sign Up</button>
 
-  <p class="switch-page">Already have an account? <a href="login.html">Login</a></p>
+  <p class="switch-page">Already have an account?
+    <a href="login.html">Login</a>
+  </p>
 </div>
 
 <script>
-function signup() {
-  let name = document.getElementById("signupName").value.trim();
-  let email = document.getElementById("signupEmail").value.trim();
-  let password = document.getElementById("signupPassword").value.trim();
-  let role = document.getElementById("signupRole").value;
+function registerUser() {
+  const name = document.getElementById("signupName").value.trim();
+  const email = document.getElementById("signupEmail").value.trim();
+  const password = document.getElementById("signupPassword").value;
+  const role = document.getElementById("signupRole").value;
 
   if (!name || !email || !password || !role) {
-    alert("All fields are required");
+    alert("Please fill all fields");
     return;
   }
 
-  let users = JSON.parse(localStorage.getItem("emsUsers") || "[]");
+  const users = JSON.parse(localStorage.getItem("emsUsers") || "[]");
 
-  if (users.find(u => u.email === email)) {
-    alert("User already exists! Please login.");
+  if (users.some(u => u.email === email)) {
+    alert("User already exists");
     return;
   }
 
-  users.push({ name, email, password, role });
+  const newUser = { name, email, password, role, status: "active" };
+  users.push(newUser);
   localStorage.setItem("emsUsers", JSON.stringify(users));
 
-  alert("Signup successful! Please login.");
+  alert("Registration successful. Login now.");
   window.location.href = "login.html";
 }
 </script>
