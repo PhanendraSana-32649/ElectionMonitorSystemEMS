@@ -1,341 +1,190 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Election Monitoring System</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="style.css" />
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Election Monitoring System</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="style.css" />
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
 <body>
-  <!-- HEADER -->
-  <header class="top-header">
-    <div class="header-left">
-      <h1>Election Monitoring System</h1>
-      <p>Ensuring Transparency, Trust & Fair Elections</p>
-      <p id="roleDisplay" class="role-display"></p>
-    </div>
-    <div class="header-right">
-      <button id="themeToggle" class="theme-toggle">🌙 Dark Mode</button>
-      <a href="login.html" class="logout-btn">Logout</a>
-    </div>
-  </header>
-
-  <!-- NAVBAR -->
-  <nav class="navbar">
-    <a class="menu-admin" onclick="showSection('adminPanel')">Admin Panel</a>
-    <a class="menu-citizen" onclick="showSection('citizenDashboard')">Citizen Home</a>
-    <a class="menu-observer" onclick="showSection('observerDashboard')">Observer Panel</a>
-    <a class="menu-analyst" onclick="showSection('analystDashboard')">Analytics</a>
-    <a onclick="showSection('livevotes')">Live Votes</a>
-    <a onclick="showSection('track')">Complaints</a>
-    <a onclick="showSection('chat')">Discussions</a>
-  </nav>
-
-  <!-- ===================== ADMIN ======================= -->
-  <section id="adminPanel" class="section">
-    <h2>Admin Dashboard</h2>
-    <p class="section-subtitle">Manage users, complaints & monitoring overview.</p>
-
-    <div class="cards-container">
-      <div class="stat-card"><div class="stat-icon">👥</div><div><h3>Total Users</h3><p id="totalUsers">0</p></div></div>
-      <div class="stat-card"><div class="stat-icon">📨</div><div><h3>Total Complaints</h3><p id="adminTotalComplaints">0</p></div></div>
-      <div class="stat-card"><div class="stat-icon">⏳</div><div><h3>Pending Complaints</h3><p id="adminPendingComplaints">0</p></div></div>
-    </div>
-
-    <h3 class="section-title">Registered Users</h3>
-    <div class="table-wrapper">
-      <table class="data-table">
-        <thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Status</th><th>Actions</th></tr></thead>
-        <tbody id="usersTableBody"></tbody>
-      </table>
-    </div>
-
-    <h3 class="section-title">Complaints (Admin Control)</h3>
-    <div class="table-wrapper">
-      <table class="data-table">
-        <thead>
-          <tr><th>ID</th><th>Location</th><th>Category</th><th>Severity</th><th>Status</th><th>Change Status</th></tr>
-        </thead>
-        <tbody id="adminComplaintsBody"></tbody>
-      </table>
-    </div>
-  </section>
-
-  <!-- ===================== CITIZEN ======================= -->
-  <section id="citizenDashboard" class="section">
-    <h2>Citizen Dashboard</h2>
-    <p class="section-subtitle">Report issues, track results & stay informed.</p>
-    <button class="primary-btn" onclick="openReportModal()"> + Report Issue </button>
-  </section>
-
-  <!-- ===================== OBSERVER ======================= -->
-  <section id="observerDashboard" class="section">
-    <h2>Observer Panel</h2>
-    <p class="section-subtitle">Submit booth condition reports.</p>
-
-    <div class="two-column">
-      <div class="card-block">
-        <h3>Submit Booth Report</h3>
-        <form id="boothForm" onsubmit="submitBoothReport(event)">
-          <input type="text" id="boothId" placeholder="Booth ID" required />
-          <input type="text" id="boothLocation" placeholder="Location" required />
-          <select id="boothEvmStatus" required>
-            <option disabled selected>EVM Status</option>
-            <option>Working Fine</option><option>Minor Issues</option><option>Major Failure</option>
-          </select>
-          <select id="boothCrowd" required>
-            <option disabled selected>Queue Length</option><option>Low</option><option>Moderate</option><option>High</option>
-          </select>
-          <textarea id="boothNotes" placeholder="Notes / Observations" required></textarea>
-          <button class="primary-btn">Submit</button>
-        </form>
-      </div>
-
-      <div class="card-block">
-        <h3>Recent Booth Reports</h3>
-        <div id="boothReportsContainer" class="booth-list"></div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ===================== ANALYST ======================= -->
-  <section id="analystDashboard" class="section">
-    <h2>Analytics Dashboard</h2>
-    <p class="section-subtitle">Visual complaint & vote statistics.</p>
-
-    <div class="charts-row">
-      <div class="chart-card"><h3>Complaints by Category</h3><canvas id="analystComplaintsChart"></canvas></div>
-      <div class="chart-card"><h3>Severity Distribution</h3><canvas id="analystSeverityChart"></canvas></div>
-    </div>
-
-    <div class="charts-row">
-      <div class="chart-card"><h3>Verified vs Pending Votes</h3><canvas id="analystVerifyChart"></canvas></div>
-      <div class="chart-card"><h3>Complaints Timeline</h3><canvas id="analystTimelineChart"></canvas></div>
-    </div>
-  </section>
-
-  <!-- ===================== LIVE VOTES ======================= -->
-  <section id="livevotes" class="section">
-    <div class="section-header">
-      <h2>🔴 LIVE Vote Counting</h2>
-      <span id="lastUpdated" class="live-timer">Last Updated: --:--:--</span>
-    </div>
-
-    <div class="live-controls">
-      <button class="primary-btn" onclick="castVote('ABC')">Vote A</button>
-      <button class="primary-btn" onclick="castVote('XYZ')">Vote B</button>
-      <button class="primary-btn" onclick="castVote('IND')">Vote C</button>
-    </div>
-
-    <div class="leaderboard">
-      <h3>Party Leaderboard</h3>
-      <div id="leaderboardContent"></div>
-    </div>
-
-    <div class="verification-box">
-      <h3>Verification & Blockchain Log</h3>
-      <p><strong>Verified:</strong> <span id="verVotes">0</span></p>
-      <p><strong>Pending:</strong> <span id="unverVotes">0</span></p>
-      <p><strong>Block Hash:</strong> <span id="hashValue">--</span></p>
-      <div id="blockchainLog" class="blockchain-log"></div>
-    </div>
-
-    <div class="charts-row">
-      <div class="chart-card">
-        <h3>Live Votes Chart</h3>
-        <canvas id="liveVotesChart"></canvas>
-      </div>
-      <div class="chart-card">
-        <h3>Verification</h3>
-        <canvas id="verifyChart"></canvas>
-      </div>
-    </div>
-  </section>
-
-  <!-- ===================== COMPLAINTS ======================= -->
-  <section id="track" class="section">
-    <h2>Complaints Tracking</h2>
-    <input type="text" id="complaintSearch" placeholder="Search complaints..." />
-    <div id="complaintsContainer" class="complaints-list"></div>
-    <p id="noComplaintsMsg" class="no-data-msg">No complaints found yet.</p>
-  </section>
-
-  <!-- ===================== CHAT ======================= -->
-  <section id="chat" class="section">
-    <h2>Discussions</h2>
-    <div class="chat-wrapper">
-      <div id="chatMessages" class="chat-messages"></div>
-      <div class="chat-input-row">
-        <input type="text" id="chatInput" placeholder="Type message..." />
-        <button class="primary-btn" onclick="sendChatMessage()">Send</button>
-      </div>
-    </div>
-  </section>
-
-  <!-- ===================== VOTER VERIFICATION ======================= -->
-  <section id="verify" class="section">
-    <h2>Voter Verification (Demo)</h2>
-    <div class="verify-box">
-      <input type="text" id="voterIdInput" placeholder="Enter Voter ID (ABC1234)" />
-      <button class="primary-btn" onclick="verifyVoterId()">Verify</button>
-    </div>
-    <p id="voterResult" class="verify-result"></p>
-  </section>
-
-  <!-- ===================== MODAL ======================= -->
-  <div id="reportModal" class="modal">
-    <div class="modal-content">
-      <h3>New Complaint</h3>
-      <form id="reportForm" onsubmit="submitReport(event)">
-        <input type="text" id="repName" placeholder="Your Name" required />
-        <input type="text" id="repLocation" placeholder="Location" required />
-        <select id="repCategory" required>
-          <option disabled selected>Category</option>
-          <option>Fraud / Malpractice</option><option>Violence</option><option>EVM Issue</option><option>Booth Management</option>
-        </select>
-        <select id="repSeverity" required>
-          <option disabled selected>Severity</option>
-          <option>Low</option><option>Medium</option><option>High</option><option>Critical</option>
-        </select>
-        <textarea id="repDescription" placeholder="Description" required></textarea>
-        <div class="modal-actions">
-          <button type="button" class="secondary-btn" onclick="closeReportModal()">Cancel</button>
-          <button class="primary-btn">Submit</button>
-        </div>
-      </form>
-    </div>
+<header class="top-header">
+  <div class="header-left">
+    <h1>Election Monitoring System</h1>
+    <p>Ensuring Transparency, Trust & Fair Elections</p>
+    <p id="roleDisplay" class="role-display"></p>
   </div>
+  <div class="header-right">
+    <button id="themeToggle" class="theme-toggle">🌙 Dark Mode</button>
+    <a href="login.html" class="logout-btn">Logout</a>
+  </div>
+</header>
 
-  <!-- TOAST -->
-  <div id="toast" class="toast"></div>
+<nav class="navbar">
+  <a class="menu-admin" onclick="showSection('adminPanel')">Admin Panel</a>
+  <a class="menu-citizen" onclick="showSection('citizenDashboard')">Citizen Home</a>
+  <a class="menu-observer" onclick="showSection('observerDashboard')">Observer Panel</a>
+  <a class="menu-analyst" onclick="showSection('analystDashboard')">Analytics</a>
+  <a onclick="showSection('livevotes')">Live Votes</a>
+  <a onclick="showSection('track')">Complaints</a>
+  <a onclick="showSection('chat')">Discussions</a>
+</nav>
 
-  <!-- ===================== SCRIPT ======================= -->
-  <script>
-    const $ = id => document.getElementById(id);
+<section id="adminPanel" class="section">
+<h2>Admin Dashboard</h2>
+<p class="section-subtitle">Manage users, complaints & system overview.</p>
 
-    // ---- THEME ----
-    function loadTheme() {
-      const saved = localStorage.getItem("emsTheme");
-      if (saved === "dark") document.body.classList.add("dark");
-    }
-    $("themeToggle").onclick = () => {
-      document.body.classList.toggle("dark");
-      localStorage.setItem("emsTheme", document.body.classList.contains("dark") ? "dark" : "light");
-    };
+<div class="cards-container">
+  <div class="stat-card"><div class="stat-icon">👥</div><div><h3>Total Users</h3><p id="totalUsers">0</p></div></div>
+  <div class="stat-card"><div class="stat-icon">📨</div><div><h3>Total Complaints</h3><p id="adminTotalComplaints">0</p></div></div>
+  <div class="stat-card"><div class="stat-icon">⏳</div><div><h3>Pending Complaints</h3><p id="adminPendingComplaints">0</p></div></div>
+</div>
 
-    // ---- ROLE ----
-    function loadRole() {
-      const role = localStorage.getItem("userRole") || "citizen";
-      $("roleDisplay").textContent = "Logged in as: " + role.toUpperCase();
-      return role;
-    }
+<h3 class="section-title">Registered Users</h3>
+<div class="table-wrapper">
+  <table class="data-table">
+    <thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Status</th><th>Actions</th></tr></thead>
+    <tbody id="usersTableBody"></tbody>
+  </table>
+</div>
 
-    function showSection(id) {
-      document.querySelectorAll(".section").forEach(sec => sec.style.display = "none");
-      $(id).style.display = "block";
-    }
+<h3 class="section-title">Complaints (Admin Control)</h3>
+<div class="table-wrapper">
+  <table class="data-table">
+    <thead><tr><th>ID</th><th>Location</th><th>Category</th><th>Severity</th><th>Status</th><th>Change Status</th></tr></thead>
+    <tbody id="adminComplaintsBody"></tbody>
+  </table>
+</div>
+</section>
 
-    function applyRolePermissions() {
-      const role = loadRole();
-      document.querySelectorAll(".menu-admin,.menu-citizen,.menu-observer,.menu-analyst").forEach(e => e.style.display = "none");
+<section id="citizenDashboard" class="section">
+  <h2>Citizen Dashboard</h2>
+  <p class="section-subtitle">Report issues & follow election updates.</p>
+  <button class="primary-btn" onclick="openReportModal()">+ Report Issue</button>
+</section>
 
-      if (role === "admin") document.querySelector(".menu-admin").style.display = "block";
-      if (role === "citizen") document.querySelector(".menu-citizen").style.display = "block";
-      if (role === "observer") document.querySelector(".menu-observer").style.display = "block";
-      if (role === "analyst") document.querySelector(".menu-analyst").style.display = "block";
+<section id="observerDashboard" class="section">
+  <h2>Observer Panel</h2>
+  <p class="section-subtitle">Submit booth reports</p>
 
-      $("livevotes").style.display = "block";
-    }
+  <form id="boothForm" onsubmit="submitBoothReport(event)">
+    <input type="text" id="boothId" placeholder="Booth ID" required />
+    <input type="text" id="boothLocation" placeholder="Location" required />
+    <select id="boothEvmStatus" required>
+      <option disabled selected>EVM Status</option>
+      <option value="Working Fine">Working Fine</option>
+      <option value="Minor Issue">Minor Issue</option>
+      <option value="Major Failure">Major Failure</option>
+    </select>
+    <textarea id="boothNotes" placeholder="Notes" required></textarea>
+    <button type="submit" class="primary-btn">Submit</button>
+  </form>
 
-    // ---- TOAST ----
-    function showToast(msg) {
-      $("toast").textContent = msg;
-      $("toast").classList.add("show");
-      setTimeout(() => $("toast").classList.remove("show"), 2500);
-    }
+  <h3>Recent Booth Reports</h3>
+  <div id="boothReportsContainer" class="booth-list"></div>
+</section>
 
-    // ---- LIVE VOTES ----
-    function getLiveVotes() {
-      return JSON.parse(localStorage.getItem("liveVotes") || JSON.stringify({ ABC: 0, XYZ: 0, IND: 0, verified: 0, unverified: 0, blocks: [] }));
-    }
-    function saveLiveVotes(d) { localStorage.setItem("liveVotes", JSON.stringify(d)); }
+<section id="analystDashboard" class="section">
+  <h2>Analytics Dashboard</h2>
+  <div class="charts-row">
+    <div class="chart-card"><h3>Complaints by Category</h3><canvas id="analystComplaintsChart"></canvas></div>
+    <div class="chart-card"><h3>Severity</h3><canvas id="analystSeverityChart"></canvas></div>
+  </div>
+  <div class="charts-row">
+    <div class="chart-card"><h3>Votes Verification</h3><canvas id="analystVerifyChart"></canvas></div>
+    <div class="chart-card"><h3>Complaints Timeline</h3><canvas id="analystTimelineChart"></canvas></div>
+  </div>
+</section>
 
-    let liveChart = null, verificationChart = null;
+<section id="livevotes" class="section">
+<div class="section-header">
+<h2>🔴 LIVE Vote Counting</h2>
+<span id="lastUpdated" class="live-timer">Last updated: --:--:--</span>
+</div>
 
-    function castVote(party) {
-      const d = getLiveVotes();
-      d[party] += 1;
-      if (Math.random() > 0.25) d.verified++; else d.unverified++;
+<div class="live-controls">
+  <button class="primary-btn" onclick="castVote('ABC')">Vote PARTY A</button>
+  <button class="primary-btn" onclick="castVote('XYZ')">Vote PARTY B</button>
+  <button class="primary-btn" onclick="castVote('IND')">Vote PARTY C</button>
+</div>
 
-      const block = {
-        time: new Date().toLocaleTimeString(),
-        party,
-        totalVotes: d.ABC + d.XYZ + d.IND,
-        prevHash: d.blocks.length ? d.blocks[d.blocks.length - 1].hash : "GENESIS",
-        hash: btoa(Date.now() + party).slice(0, 12)
-      };
-      d.blocks.push(block);
+<div class="leaderboard">
+  <h3>Leader Board</h3>
+  <div id="leaderboardContent"></div>
+</div>
 
-      saveLiveVotes(d);
-      updateLiveVotesUI();
-    }
+<div class="verification-box">
+  <h3>Verification & Blockchain Log</h3>
+  <p><strong>Verified:</strong> <span id="verVotes">0</span></p>
+  <p><strong>Pending:</strong> <span id="unverVotes">0</span></p>
+  <p><strong>Hash:</strong> <span id="hashValue"></span></p>
+  <div id="blockchainLog" class="blockchain-log"></div>
+</div>
 
-    setInterval(() => {
-      castVote(["ABC", "XYZ", "IND"][Math.floor(Math.random() * 3)]);
-    }, 8000);
+<div class="charts-row">
+  <div class="chart-card"><h3>Live Votes</h3><canvas id="liveVotesChart"></canvas></div>
+  <div class="chart-card"><h3>Verification</h3><canvas id="verifyChart"></canvas></div>
+</div>
+</section>
 
-    function updateLiveVotesUI() {
-      const d = getLiveVotes();
+<section id="track" class="section">
+<h2>Complaints Tracking</h2>
+<input id="complaintSearch" type="text" placeholder="Search..." />
+<div id="complaintsContainer" class="complaints-list"></div>
+<p id="noComplaintsMsg" class="no-data-msg">No complaints yet.</p>
+</section>
 
-      $("verVotes").textContent = d.verified;
-      $("unverVotes").textContent = d.unverified;
-      $("lastUpdated").textContent = "Last Updated: " + new Date().toLocaleTimeString();
-      $("hashValue").textContent = d.blocks.length ? d.blocks[d.blocks.length - 1].hash : "--";
+<section id="chat" class="section">
+<h2>Discussions</h2>
+<div id="chatMessages" class="chat-messages"></div>
+<div class="chat-input">
+  <input id="chatInput" type="text" placeholder="Type message...">
+  <button class="primary-btn" onclick="sendChatMessage()">Send</button>
+</div>
+</section>
 
-      const sorted = Object.entries({ ABC: d.ABC, XYZ: d.XYZ, IND: d.IND }).sort((a, b) => b[1] - a[1]);
-      $("leaderboardContent").innerHTML = sorted.map(p => `<div class="leader-row"><span>${p[0]}</span><span>${p[1]} votes</span></div>`).join("");
+<section id="verify" class="section">
+<h2>Voter Verification</h2>
+<div class="verify-box">
+  <input id="voterIdInput" type="text" placeholder="Enter voter ID">
+  <button onclick="verifyVoterId()" class="primary-btn">Verify</button>
+</div>
+<p id="voterResult" class="verify-result"></p>
+</section>
 
-      const log = $("blockchainLog");
-      log.innerHTML = "";
-      d.blocks.slice().reverse().slice(0, 6).forEach(b => {
-        const div = document.createElement("div");
-        div.className = "block-card";
-        div.innerHTML = `<p><strong>${b.time}</strong> – Party ${b.party}</p><p>Votes so far: ${b.totalVotes}</p><p>Hash: ${b.hash}</p><p class="small">Prev: ${b.prevHash}</p>`;
-        log.appendChild(div);
-      });
+<div id="reportModal" class="modal">
+<div class="modal-content">
+<h3>New Complaint</h3>
+<form id="reportForm" onsubmit="submitReport(event)">
+<input id="repName" placeholder="Your name" required />
+<input id="repLocation" placeholder="Location / Booth ID" required />
+<select id="repCategory" required>
+<option disabled selected>Select Category</option>
+<option>Fraud / Malpractice</option>
+<option>Violence</option>
+<option>Technical Issue (EVM)</option>
+<option>Management</option>
+<option>Other</option>
+</select>
+<select id="repSeverity" required>
+<option disabled selected>Select Severity</option>
+<option>Low</option>
+<option>Medium</option>
+<option>High</option>
+<option>Critical</option>
+</select>
+<textarea id="repDescription" rows="3" required placeholder="Description"></textarea>
+<div class="modal-actions">
+<button type="button" class="secondary-btn" onclick="closeReportModal()">Cancel</button>
+<button type="submit" class="primary-btn">Submit</button>
+</div>
+</form>
+</div>
+</div>
 
-      const ctx1 = $("liveVotesChart").getContext("2d");
-      if (!liveChart) {
-        liveChart = new Chart(ctx1, {
-          type: "bar",
-          data: { labels: ["ABC", "XYZ", "IND"], datasets: [{ data: [d.ABC, d.XYZ, d.IND], borderWidth: 1 }] }
-        });
-      } else {
-        liveChart.data.datasets[0].data = [d.ABC, d.XYZ, d.IND];
-        liveChart.update();
-      }
-
-      const ctx2 = $("verifyChart").getContext("2d");
-      if (!verificationChart) {
-        verificationChart = new Chart(ctx2, {
-          type: "pie",
-          data: { labels: ["Verified", "Pending"], datasets: [{ data: [d.verified, d.unverified] }] }
-        });
-      } else {
-        verificationChart.data.datasets[0].data = [d.verified, d.unverified];
-        verificationChart.update();
-      }
-    }
-
-    // ---- INIT ----
-    window.addEventListener("DOMContentLoaded", () => {
-      loadTheme();
-      applyRolePermissions();
-      updateLiveVotesUI();
-    });
-  </script>
+<div id="toast" class="toast"></div>
+<script src="app.js"></script>
 </body>
 </html>
