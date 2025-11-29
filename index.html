@@ -27,14 +27,45 @@
     </div>
   </header>
 
-  <!-- NAVBAR -->
-  <nav class="navbar">
-    <a onclick="showSection('dashboard')">Dashboard</a>
-    <a onclick="showSection('report')">Report Issue</a>
-    <a onclick="showSection('livevotes')">Live Votes</a>
-    <a onclick="showSection('verify')">Voter Verification</a>
-    <a onclick="showSection('track')">Track Complaints</a>
-  </nav>
+<nav class="navbar">
+  <a class="menu-admin" onclick="showSection('adminPanel')">Admin Panel</a>
+  <a class="menu-citizen" onclick="showSection('citizenDashboard')">Citizen Home</a>
+  <a class="menu-observer" onclick="showSection('observerDashboard')">Observer Panel</a>
+  <a class="menu-analyst" onclick="showSection('analystDashboard')">Analytics Dashboard</a>
+  <a onclick="showSection('livevotes')">Live Votes</a>
+  <a onclick="showSection('track')">Track Complaints</a>
+  <a href="login.html">Logout</a>
+</nav>
+<!-- ADMIN SECTION -->
+<section id="adminPanel" class="section">
+  <h2>Admin Dashboard</h2>
+  <p>Manage Users, Review Issues, Monitor Elections.</p>
+  <ul>
+    <li>Total Users: <span id="totalUsers"></span></li>
+    <li>Pending complaints</li>
+    <li>Control election setup</li>
+  </ul>
+</section>
+
+<!-- CITIZEN SECTION -->
+<section id="citizenDashboard" class="section">
+  <h2>Citizen Dashboard</h2>
+  <p>Report issues, track voting updates & participate responsibly.</p>
+  <button onclick="openReportModal()" class="primary-btn">Report Issue</button>
+</section>
+
+<!-- OBSERVER SECTION -->
+<section id="observerDashboard" class="section">
+  <h2>Election Observer Panel</h2>
+  <p>Validate citizen complaints & submit booth reports.</p>
+</section>
+
+<!-- DATA ANALYST SECTION -->
+<section id="analystDashboard" class="section">
+  <h2>Analytics Dashboard</h2>
+  <p>Live analysis & graphical insights</p>
+  <canvas id="analysisChart"></canvas>
+</section>
 
   <!-- DASHBOARD SECTION -->
   <section id="dashboard" class="section active">
@@ -661,6 +692,39 @@ function updateLiveCharts(data) {
 }
 
 window.addEventListener("DOMContentLoaded", updateLiveVotesUI);
+    function applyRolePermissions() {
+  const role = localStorage.getItem("userRole");
+
+  // Hide all role-based menus by default
+  document.querySelectorAll(".menu-admin, .menu-citizen, .menu-observer, .menu-analyst")
+    .forEach(el => el.style.display = "none");
+
+  // Hide all dashboards
+  document.querySelectorAll("#adminPanel, #citizenDashboard, #observerDashboard, #analystDashboard")
+    .forEach(el => el.style.display = "none");
+
+  // Display according to role
+  if (role === "admin") {
+    document.querySelector(".menu-admin").style.display = "block";
+    document.getElementById("adminPanel").style.display = "block";
+  } else if (role === "citizen") {
+    document.querySelector(".menu-citizen").style.display = "block";
+    document.getElementById("citizenDashboard").style.display = "block";
+  } else if (role === "observer") {
+    document.querySelector(".menu-observer").style.display = "block";
+    document.getElementById("observerDashboard").style.display = "block";
+  } else if (role === "analyst") {
+    document.querySelector(".menu-analyst").style.display = "block";
+    document.getElementById("analystDashboard").style.display = "block";
+  }
+
+  // Show Live Votes for everyone
+  document.getElementById("livevotes").classList.add("active");
+}
+
+// On page load
+window.addEventListener("DOMContentLoaded", applyRolePermissions);
+
 
   </script>
 </body>
