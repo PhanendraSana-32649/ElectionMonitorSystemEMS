@@ -31,7 +31,7 @@
   <nav class="navbar">
     <a onclick="showSection('dashboard')">Dashboard</a>
     <a onclick="showSection('report')">Report Issue</a>
-    <a onclick="showSection('transparency')">Transparency Hub</a>
+    <a onclick="showSection('livevotes')">Live Votes</a>
     <a onclick="showSection('verify')">Voter Verification</a>
     <a onclick="showSection('track')">Track Complaints</a>
   </nav>
@@ -558,6 +558,110 @@
       renderComplaints();
       updateStatsAndCharts();
     });
+    // ===== LIVE VOTES DATA =====
+function getLiveVotes() {
+  return JSON.parse(localStorage.getItem("liveVotes") || JSON.stringify({
+    ABC: 0, XYZ: 0, IND: 0,
+    verified: 0, unverified: 0
+  }));
+}
+
+function saveLiveVotes(data) {
+  localStorage.setItem("liveVotes", JSON.stringify(data));
+}
+
+// Cast vote buttons (demo simulation)
+function castVote(party) {
+  const data = getLiveVotes();
+  data[party] += 1;
+
+  if (Math.random() > 0.25) data.verified += 1;
+  else data.unverified += 1;
+
+  saveLiveVotes(data);
+  updateLiveVotesUI();
+  showToast("Vote submitted for " + party);
+}
+
+// Auto simulation every 4s to look real
+setInterval(() => {
+  const parties = ["ABC", "XYZ", "IND"];
+  castVote(parties[Math.floor(Math.random() * 3)]);
+}, 4000);
+
+// Update UI
+function updateLiveVotesUI() {
+  const data = getLiveVotes();
+
+  document.getElementById("verVotes").textContent = data.verified;
+  document.getElementById("unverVotes").textContent = data.unverified;
+
+  const hash = btoa(JSON.stringify(data)).slice(0, 12);
+  document.getElementById("hashValue").textContent = hash;
+
+  document.getElementById("lastUpdated").textContent =
+    "Last Updated: " + new Date().toLocaleTimeString();
+
+  updateLeaderboard(data);
+  updateLiveCharts(data);
+}
+
+function updateLeaderboard(data) {
+  const sorted = Object.entries({
+    ABC: data.ABC, XYZ: data.XYZ, IND: data.IND
+  }).sort((a, b) => b[1] - a[1]);
+
+  const lb = sorted.map(p => `
+    <div class="leader-row">
+      <span>${p[0]}</span>
+      <span>${p[1]} votes</span>
+    </div>
+  `).join("");
+
+  document.getElementById("leaderboardContent").innerHTML = lb;
+}
+
+// ===== Charts =====
+let liveChart = null;
+let verificationChart = null;
+
+function updateLiveCharts(data) {
+  const ctx1 = document.getElementById("turnoutChart").getContext("2d");
+  const ctx2 = document.getElementById("verifyChart").getContext("2d");
+
+  if (!liveChart) {
+    liveChart = new Chart(ctx1, {
+      type: "bar",
+      data: {
+        labels: ["ABC", "XYZ", "IND"],
+        datasets: [{
+          data: [data.ABC, data.XYZ, data.IND],
+          borderWidth: 1
+        }]
+      },
+      options: { responsive: true }
+    });
+  } else {
+    liveChart.data.datasets[0].data = [data.ABC, data.XYZ, data.IND];
+    liveChart.update();
+  }
+
+  if (!verificationChart) {
+    verificationChart = new Chart(ctx2, {
+      type: "pie",
+      data: {
+        labels: ["Verified", "Pending"],
+        datasets: [{ data: [data.verified, data.unverified] }]
+      }
+    });
+  } else {
+    verificationChart.data.datasets[0].data = [data.verified, data.unverified];
+    verificationChart.update();
+  }
+}
+
+window.addEventListener("DOMContentLoaded", updateLiveVotesUI);
+
   </script>
 </body>
 </html>
