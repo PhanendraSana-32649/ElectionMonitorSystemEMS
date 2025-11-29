@@ -100,21 +100,42 @@
     </p>
   </section>
 
-  <!-- TRANSPARENCY HUB SECTION -->
-  <section id="transparency" class="section">
-    <h2>Transparency Hub</h2>
-    <p>
-      This section gives an at-a-glance view of the election health based on live-style data and complaints logged in the system.
-    </p>
-    <ul>
-      <li>Live turnout trend (simulated data).</li>
-      <li>Distribution of issue categories from complaints.</li>
-      <li>Critical issues are highlighted for quick response.</li>
-    </ul>
-    <p class="hint-text">
-      The charts on the Dashboard are automatically updated every time a new complaint is added.
-    </p>
-  </section>
+  <!-- LIVE VOTES SECTION -->
+<section id="livevotes" class="section">
+  <h2>🔴 LIVE Vote Counting</h2>
+  <p id="lastUpdated" class="live-timer">Last Updated: --:--:--</p>
+
+  <div class="live-controls">
+    <button class="primary-btn" onclick="castVote('ABC')">Vote ABC</button>
+    <button class="primary-btn" onclick="castVote('XYZ')">Vote XYZ</button>
+    <button class="primary-btn" onclick="castVote('IND')">Vote IND</button>
+  </div>
+
+  <div class="leaderboard">
+    <h3>Party Vote Leaderboard</h3>
+    <div id="leaderboardContent"></div>
+  </div>
+
+  <div class="verification-box">
+    <h3>Verification & Security Status</h3>
+    <p><strong>Verified Votes:</strong> <span id="verVotes">0</span></p>
+    <p><strong>Pending Verification:</strong> <span id="unverVotes">0</span></p>
+    <p><strong>Verification Strength Hash:</strong> <span id="hashValue"></span></p>
+  </div>
+
+  <div class="charts-row">
+    <div class="chart-card">
+      <h3>Live Votes by Party</h3>
+      <canvas id="turnoutChart"></canvas>
+    </div>
+
+    <div class="chart-card">
+      <h3>Verified vs Pending Votes</h3>
+      <canvas id="verifyChart"></canvas>
+    </div>
+  </div>
+</section>
+
 
   <!-- VOTER VERIFICATION SECTION -->
   <section id="verify" class="section">
