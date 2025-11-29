@@ -549,3 +549,19 @@ body.dark .hint-text {
 .leaderboard { background:#f9fafb; border-radius:12px; padding:12px; margin-top:12px; }
 .leader-row { display:flex; justify-content:space-between; padding:5px 0; font-size:15px; }
 .verification-box { margin-top:14px; background:#f9fafb; padding:12px; border-radius:12px; }
+
+/* login & signup */
+.switch-page {
+  margin-top: 12px;
+  font-size: 13px;
+}
+
+.switch-page a {
+  color: #1b4bbf;
+  text-decoration: none;
+  font-weight: 500;
+}
+.switch-page a:hover {
+  text-decoration: underline;
+}
+
