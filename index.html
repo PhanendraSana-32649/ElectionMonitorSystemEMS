@@ -1,120 +1,542 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Election Monitoring System</title>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
-
-<style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:"Poppins",sans-serif;}
-
-body{background:#f2f4f8;}
-
-.top-header{
-  background:#0b2f6a;text-align:center;padding:25px;color:white;
-  border-bottom:4px solid #1b4bbf;
-}
-
-.top-header h1{font-size:32px;font-weight:600;}
-.top-header p{margin-top:5px;font-weight:300;}
-
-.navbar{
-  background:#1b4bbf;display:flex;justify-content:center;
-  padding:14px;gap:40px;
-}
-
-.navbar a{
-  color:white;text-decoration:none;font-weight:500;cursor:pointer;
-  transition:0.3s;
-}
-
-.navbar a:hover{font-weight:600;text-decoration:underline;}
-
-.section{
-  width:85%;background:white;margin:30px auto;padding:35px;
-  border-radius:14px;box-shadow:0 4px 18px rgba(0,0,0,0.1);
-  display:none; animation:fade .4s;
-}
-
-.section.active{display:block;}
-
-@keyframes fade{from{opacity:0;} to{opacity:1;}}
-
-.section h2{
-  color:#0b2f6a;font-size:26px;margin-bottom:15px;
-  border-left:6px solid #1b4bbf;padding-left:10px;
-}
-
-ul{margin-left:40px;line-height:1.8;font-size:16px;}
-</style>
-
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Election Monitoring System</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap"
+    rel="stylesheet"
+  />
+  <link rel="stylesheet" href="style.css" />
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
+
 <body>
+  <!-- HEADER -->
+  <header class="top-header">
+    <div class="header-left">
+      <h1>Election Monitoring System</h1>
+      <p>Ensuring Transparency, Trust, and Fair Elections</p>
+      <p id="roleDisplay" class="role-display"></p>
+    </div>
+    <div class="header-right">
+      <button id="themeToggle" class="theme-toggle">🌙 Dark Mode</button>
+      <a href="login.html" class="logout-btn">Logout</a>
+    </div>
+  </header>
 
-<header class="top-header">
-  <h1>Election Monitoring System</h1>
-  <p>Ensuring Transparency, Trust, and Fair Elections</p>
-</header>
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <a onclick="showSection('dashboard')">Dashboard</a>
+    <a onclick="showSection('report')">Report Issue</a>
+    <a onclick="showSection('transparency')">Transparency Hub</a>
+    <a onclick="showSection('verify')">Voter Verification</a>
+    <a onclick="showSection('track')">Track Complaints</a>
+  </nav>
 
-<nav class="navbar">
-  <a onclick="showSection('dashboard')">Dashboard</a>
-  <a onclick="showSection('report')">Report Issue</a>
-  <a onclick="showSection('transparency')">Transparency Hub</a>
-  <a onclick="showSection('verify')">Voter Verification</a>
-  <a onclick="showSection('track')">Track Complaints</a>
-  <a href="login-admin.html">Logout</a>
-</nav>
+  <!-- DASHBOARD SECTION -->
+  <section id="dashboard" class="section active">
+    <h2>Dashboard Overview</h2>
 
-<!-- Sections Start -->
+    <div class="cards-container">
+      <div class="stat-card" id="cardTotal">
+        <div class="stat-icon">📨</div>
+        <div>
+          <h3>Total Reports</h3>
+          <p id="totalReports">0</p>
+        </div>
+      </div>
 
-<div id="dashboard" class="section active">
-<h2>Dashboard</h2>
-<h3>Problems Identified:</h3>
-<ul>
-  <li>Fraud or malpractice</li>
-  <li>Misinformation / Fake news</li>
-  <li>Lack of transparency</li>
-  <li>Difficulty reporting issues</li>
-  <li>Duplicate / fraudulent voters</li>
-</ul>
+      <div class="stat-card" id="cardPending">
+        <div class="stat-icon">⏳</div>
+        <div>
+          <h3>Pending Reports</h3>
+          <p id="pendingReports">0</p>
+        </div>
+      </div>
 
-<h3>Solutions This System Provides:</h3>
-<ul>
-  <li>Centralized issue reporting & tracking</li>
-  <li>Verified complaint IDs</li>
-  <li>Live results & transparency hub</li>
-  <li>Voter verification tool</li>
-  <li>Digital reporting channels</li>
-</ul>
-</div>
+      <div class="stat-card" id="cardCritical">
+        <div class="stat-icon">⚠️</div>
+        <div>
+          <h3>Critical Issues</h3>
+          <p id="criticalReports">0</p>
+        </div>
+      </div>
 
-<div id="report" class="section">
-<h2>Report Issue</h2>
-<p>Issue form and complaint submission UI will be here</p>
-</div>
+      <div class="stat-card" id="cardTurnout">
+        <div class="stat-icon">🗳️</div>
+        <div>
+          <h3>Avg Turnout (%)</h3>
+          <p id="avgTurnout">0%</p>
+        </div>
+      </div>
+    </div>
 
-<div id="transparency" class="section">
-<h2>Transparency Hub</h2>
-<p>Live results, verified news, turnout statistics, charts, insights</p>
-</div>
+    <div class="charts-row">
+      <div class="chart-card">
+        <h3>Live Voting Turnout by Constituency</h3>
+        <canvas id="turnoutChart"></canvas>
+      </div>
+      <div class="chart-card">
+        <h3>Complaints by Category</h3>
+        <canvas id="complaintChart"></canvas>
+      </div>
+    </div>
+  </section>
 
-<div id="verify" class="section">
-<h2>Voter Verification</h2>
-<p>Voter ID check input box and verification result will appear here</p>
-</div>
+  <!-- REPORT ISSUE SECTION -->
+  <section id="report" class="section">
+    <h2>Report an Issue</h2>
+    <p>
+      Use the button below to submit a new complaint about any fraud, malpractice, or issues at your polling booth.
+      All complaints are stored locally in your browser using <strong>localStorage</strong> for demo purposes.
+    </p>
+    <button class="primary-btn" onclick="openReportModal()">+ New Report</button>
 
-<div id="track" class="section">
-<h2>Track Complaints</h2>
-<p>Tracking complaint ID statuses here</p>
-</div>
+    <p class="hint-text">
+      After submission, you can view and search your complaint in <strong>Track Complaints</strong>.
+    </p>
+  </section>
 
-<script>
-function showSection(id){
-  document.querySelectorAll(".section").forEach(sec => sec.classList.remove("active"));
-  document.getElementById(id).classList.add("active");
-}
-</script>
+  <!-- TRANSPARENCY HUB SECTION -->
+  <section id="transparency" class="section">
+    <h2>Transparency Hub</h2>
+    <p>
+      This section gives an at-a-glance view of the election health based on live-style data and complaints logged in the system.
+    </p>
+    <ul>
+      <li>Live turnout trend (simulated data).</li>
+      <li>Distribution of issue categories from complaints.</li>
+      <li>Critical issues are highlighted for quick response.</li>
+    </ul>
+    <p class="hint-text">
+      The charts on the Dashboard are automatically updated every time a new complaint is added.
+    </p>
+  </section>
 
+  <!-- VOTER VERIFICATION SECTION -->
+  <section id="verify" class="section">
+    <h2>Voter Verification</h2>
+    <p>Enter your Voter ID to check basic validity (demo validation only):</p>
+    <div class="verify-box">
+      <input
+        type="text"
+        id="voterIdInput"
+        placeholder="Enter Voter ID (e.g., ABCD1234)"
+      />
+      <button class="primary-btn" onclick="verifyVoterId()">Verify</button>
+    </div>
+    <p id="voterResult" class="verify-result"></p>
+  </section>
+
+  <!-- TRACK COMPLAINTS SECTION -->
+  <section id="track" class="section">
+    <h2>Track Complaints</h2>
+    <div class="track-header">
+      <input
+        type="text"
+        id="complaintSearch"
+        placeholder="Search complaints by category, location, severity, status, description..."
+      />
+      <span class="track-hint">Search will highlight and filter matching complaints 🔍</span>
+    </div>
+
+    <div id="complaintsContainer" class="complaints-list">
+      <!-- Complaints will be injected here -->
+    </div>
+    <p id="noComplaintsMsg" class="no-data-msg">No complaints found yet. Try adding one from the Report Issue section.</p>
+  </section>
+
+  <!-- REPORT MODAL -->
+  <div id="reportModal" class="modal">
+    <div class="modal-content">
+      <h3>New Complaint</h3>
+      <form id="reportForm" onsubmit="submitReport(event)">
+        <div class="form-row">
+          <label>Your Name</label>
+          <input type="text" id="repName" required />
+        </div>
+        <div class="form-row">
+          <label>Role</label>
+          <select id="repRole" required>
+            <option value="" disabled selected>Select</option>
+            <option value="Citizen">Citizen</option>
+            <option value="Observer">Election Observer</option>
+            <option value="Admin">Admin</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <label>Location / Booth ID</label>
+          <input type="text" id="repLocation" required />
+        </div>
+        <div class="form-row">
+          <label>Category</label>
+          <select id="repCategory" required>
+            <option value="" disabled selected>Select Category</option>
+            <option value="Fraud / Malpractice">Fraud / Malpractice</option>
+            <option value="Violence / Intimidation">Violence / Intimidation</option>
+            <option value="Technical Issue (EVM)">Technical Issue (EVM)</option>
+            <option value="Booth Management">Booth Management</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <label>Severity</label>
+          <select id="repSeverity" required>
+            <option value="" disabled selected>Select Severity</option>
+            <option value="Low">Low</option>
+            <option value="Medium">Medium</option>
+            <option value="High">High</option>
+            <option value="Critical">Critical</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <label>Description</label>
+          <textarea id="repDescription" rows="3" required></textarea>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="secondary-btn" onclick="closeReportModal()">Cancel</button>
+          <button type="submit" class="primary-btn">Submit</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- TOAST NOTIFICATION -->
+  <div id="toast" class="toast"></div>
+
+  <!-- SCRIPTS -->
+  <script>
+    // ===== GLOBAL STATE =====
+    let turnoutChart = null;
+    let complaintChart = null;
+
+    // ===== SECTION SWITCHING =====
+    function showSection(id) {
+      document.querySelectorAll(".section").forEach((sec) => {
+        sec.classList.remove("active");
+      });
+      document.getElementById(id).classList.add("active");
+    }
+
+    // ===== ROLE DISPLAY FROM LOGIN =====
+    function loadRole() {
+      const role = localStorage.getItem("userRole");
+      const el = document.getElementById("roleDisplay");
+      if (role) {
+        el.textContent = "Logged in as: " + role.toUpperCase();
+      } else {
+        el.textContent = "";
+      }
+    }
+
+    // ===== DARK / LIGHT MODE =====
+    const themeToggleBtn = document.getElementById("themeToggle");
+
+    function loadTheme() {
+      const savedTheme = localStorage.getItem("emsTheme");
+      if (savedTheme === "dark") {
+        document.body.classList.add("dark");
+        themeToggleBtn.textContent = "☀️ Light Mode";
+      }
+    }
+
+    themeToggleBtn.addEventListener("click", () => {
+      document.body.classList.toggle("dark");
+      const isDark = document.body.classList.contains("dark");
+      themeToggleBtn.textContent = isDark ? "☀️ Light Mode" : "🌙 Dark Mode";
+      localStorage.setItem("emsTheme", isDark ? "dark" : "light");
+    });
+
+    // ===== VOTER VERIFICATION (DEMO ONLY) =====
+    function verifyVoterId() {
+      const input = document.getElementById("voterIdInput").value.trim();
+      const result = document.getElementById("voterResult");
+
+      if (!input) {
+        result.textContent = "Please enter a Voter ID.";
+        result.className = "verify-result error";
+        return;
+      }
+
+      // Simple demo rule: length >= 6 && contains letters + numbers
+      const hasLetters = /[A-Za-z]/.test(input);
+      const hasDigits = /\d/.test(input);
+
+      if (input.length >= 6 && hasLetters && hasDigits) {
+        result.textContent = "Voter ID format looks valid. (Demo check only)";
+        result.className = "verify-result success";
+      } else {
+        result.textContent = "Invalid Voter ID format. Please recheck.";
+        result.className = "verify-result error";
+      }
+    }
+
+    // ===== REPORT MODAL =====
+    const modal = document.getElementById("reportModal");
+
+    function openReportModal() {
+      modal.style.display = "flex";
+    }
+
+    function closeReportModal() {
+      modal.style.display = "none";
+    }
+
+    window.addEventListener("click", (e) => {
+      if (e.target === modal) {
+        closeReportModal();
+      }
+    });
+
+    // ===== LOCAL STORAGE UTILITIES =====
+    function getComplaints() {
+      return JSON.parse(localStorage.getItem("emsComplaints") || "[]");
+    }
+
+    function saveComplaints(data) {
+      localStorage.setItem("emsComplaints", JSON.stringify(data));
+    }
+
+    // ===== SUBMIT REPORT =====
+    function submitReport(event) {
+      event.preventDefault();
+
+      const name = document.getElementById("repName").value.trim();
+      const role = document.getElementById("repRole").value;
+      const location = document.getElementById("repLocation").value.trim();
+      const category = document.getElementById("repCategory").value;
+      const severity = document.getElementById("repSeverity").value;
+      const description = document.getElementById("repDescription").value.trim();
+
+      const complaints = getComplaints();
+
+      const complaint = {
+        id: "CMP" + Date.now(),
+        name,
+        role,
+        location,
+        category,
+        severity,
+        description,
+        status: "Pending",
+        createdAt: new Date().toLocaleString()
+      };
+
+      complaints.push(complaint);
+      saveComplaints(complaints);
+
+      document.getElementById("reportForm").reset();
+      closeReportModal();
+      showToast("Complaint submitted successfully.");
+      renderComplaints();
+      updateStatsAndCharts();
+      showSection("track");
+    }
+
+    // ===== TOAST =====
+    function showToast(message) {
+      const toast = document.getElementById("toast");
+      toast.textContent = message;
+      toast.classList.add("show");
+      setTimeout(() => toast.classList.remove("show"), 2500);
+    }
+
+    // ===== RENDER COMPLAINTS =====
+    function renderComplaints(filterText = "") {
+      const complaints = getComplaints();
+      const container = document.getElementById("complaintsContainer");
+      const noDataMsg = document.getElementById("noComplaintsMsg");
+
+      container.innerHTML = "";
+
+      let filtered = complaints;
+
+      if (filterText) {
+        const term = filterText.toLowerCase();
+        filtered = complaints.filter((c) => {
+          const fullText =
+            (c.id + " " +
+            c.category +
+            " " +
+            c.location +
+            " " +
+            c.severity +
+            " " +
+            c.status +
+            " " +
+            c.description).toLowerCase();
+          return fullText.includes(term);
+        });
+      }
+
+      if (filtered.length === 0) {
+        noDataMsg.style.display = "block";
+        return;
+      } else {
+        noDataMsg.style.display = "none";
+      }
+
+      filtered.forEach((c) => {
+        const card = document.createElement("div");
+        card.className = "complaint-card";
+
+        // Add glow highlight if matching search term handled outside
+        card.innerHTML = `
+          <div class="complaint-header">
+            <span class="complaint-id">${c.id}</span>
+            <span class="status status-${c.status.toLowerCase()}">${c.status}</span>
+          </div>
+          <p class="complaint-meta"><strong>Role:</strong> ${c.role} | <strong>Location:</strong> ${c.location}</p>
+          <p class="complaint-meta"><strong>Category:</strong> ${c.category} | <strong>Severity:</strong> ${c.severity}</p>
+          <p class="complaint-desc">${c.description}</p>
+          <p class="complaint-time">${c.createdAt}</p>
+        `;
+
+        container.appendChild(card);
+      });
+
+      // Apply highlight class for search term
+      applySearchHighlight(filterText);
+    }
+
+    // ===== SEARCH & HIGHLIGHT =====
+    const searchInput = document.getElementById("complaintSearch");
+
+    searchInput.addEventListener("input", () => {
+      const text = searchInput.value.trim();
+      renderComplaints(text);
+    });
+
+    function applySearchHighlight(term) {
+      const cards = document.querySelectorAll(".complaint-card");
+      const lower = term.toLowerCase();
+
+      cards.forEach((card) => {
+        card.classList.remove("highlight");
+        if (!lower) return;
+
+        if (card.innerText.toLowerCase().includes(lower)) {
+          card.classList.add("highlight");
+        }
+      });
+    }
+
+    // ===== STATS + CHARTS =====
+    function updateStatsAndCharts() {
+      const complaints = getComplaints();
+
+      // Cards
+      const total = complaints.length;
+      const pending = complaints.filter((c) => c.status === "Pending").length;
+      const critical = complaints.filter((c) => c.severity === "Critical").length;
+
+      document.getElementById("totalReports").textContent = total;
+      document.getElementById("pendingReports").textContent = pending;
+      document.getElementById("criticalReports").textContent = critical;
+
+      // Fake turnout data (live-style)
+      const turnoutData = [68, 72, 59, 81];
+      const avg =
+        turnoutData.reduce((sum, v) => sum + v, 0) / turnoutData.length;
+      document.getElementById("avgTurnout").textContent =
+        Math.round(avg) + "%";
+
+      initTurnoutChart(turnoutData);
+      updateComplaintChart(complaints);
+    }
+
+    function initTurnoutChart(turnoutData) {
+      const ctx = document.getElementById("turnoutChart").getContext("2d");
+
+      if (turnoutChart) {
+        turnoutChart.data.datasets[0].data = turnoutData;
+        turnoutChart.update();
+        return;
+      }
+
+      turnoutChart = new Chart(ctx, {
+        type: "bar",
+        data: {
+          labels: ["Constituency A", "Constituency B", "Constituency C", "Constituency D"],
+          datasets: [
+            {
+              label: "Turnout (%)",
+              data: turnoutData,
+              borderWidth: 1
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { display: false }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              max: 100
+            }
+          }
+        }
+      });
+    }
+
+    function updateComplaintChart(complaints) {
+      const ctx = document.getElementById("complaintChart").getContext("2d");
+
+      const categoryCounts = {};
+      complaints.forEach((c) => {
+        categoryCounts[c.category] = (categoryCounts[c.category] || 0) + 1;
+      });
+
+      const labels = Object.keys(categoryCounts);
+      const data = Object.values(categoryCounts);
+
+      if (labels.length === 0) {
+        labels.push("No Data");
+        data.push(1);
+      }
+
+      if (complaintChart) {
+        complaintChart.data.labels = labels;
+        complaintChart.data.datasets[0].data = data;
+        complaintChart.update();
+        return;
+      }
+
+      complaintChart = new Chart(ctx, {
+        type: "pie",
+        data: {
+          labels,
+          datasets: [
+            {
+              data,
+              borderWidth: 1
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: {
+              position: "bottom"
+            }
+          }
+        }
+      });
+    }
+
+    // ===== INITIAL LOAD =====
+    window.addEventListener("DOMContentLoaded", () => {
+      loadRole();
+      loadTheme();
+      renderComplaints();
+      updateStatsAndCharts();
+    });
+  </script>
 </body>
 </html>
