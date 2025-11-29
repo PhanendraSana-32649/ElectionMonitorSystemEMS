@@ -272,13 +272,15 @@
     const ls = {get(k, fallback){try{return JSON.parse(localStorage.getItem(k)) ?? fallback}catch(e){return fallback}}, set(k,v){localStorage.setItem(k,JSON.stringify(v))}, rm(k){localStorage.removeItem(k)}}
 
     // Seed demo data
-    function seed(){
-      if(!ls.get('users')){
-        ls.set('users',[{id:1,name:'Admin User',email:'admin@ems.local',password:'admin',role:'Admin',blocked:false},
-          {id:2,name:'Citizen One',email:'citizen@ems.local',password:'citizen',role:'Citizen',blocked:false},
-          {id:3,name:'Observer One',email:'observer@ems.local',password:'observer',role:'Election Observer',blocked:false},
-          {id:4,name:'Analyst One',email:'analyst@ems.local',password:'analyst',role:'Data Analyst',blocked:false}])
-      }
+   if(!ls.get('users')){
+  ls.set('users',[
+    {id:1,name:'Admin',email:'admin@gmail.com',password:'123',role:'Admin',blocked:false},
+    {id:2,name:'Citizen - Phanendra',email:'phanendra@gmail.com',password:'123',role:'Citizen',blocked:false},
+    {id:3,name:'Citizen - Lokesh',email:'lokesh@gmail.com',password:'123',role:'Citizen',blocked:false},
+    {id:4,name:'Citizen - Harshith',email:'harshith@gmail.com',password:'123',role:'Citizen',blocked:false},
+    {id:5,name:'Data Analyst',email:'DA@gmail.com',password:'123',role:'Data Analyst',blocked:false}
+  ])
+}
       if(!ls.get('complaints')){
         const now=Date.now();
         ls.set('complaints',[{id:1,category:'Voting Machine',severity:'High',desc:'EVM stalled','location':'Ward 12','time':now-1000*60*60*24,status:'Pending'},{id:2,category:'Fights',severity:'Medium',desc:'Large crowd fighting near entrance','location':'Ward 7','time':now-1000*60*90,status:'Approved'}])
