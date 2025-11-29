@@ -544,3 +544,8 @@ body.dark .hint-text {
 .login-box button:hover {
   background: #0b2f6a;
 }
+.live-timer { font-size:14px; color:#ef4444; margin-bottom:10px; }
+.live-controls { margin:12px 0; display:flex; gap:10px; }
+.leaderboard { background:#f9fafb; border-radius:12px; padding:12px; margin-top:12px; }
+.leader-row { display:flex; justify-content:space-between; padding:5px 0; font-size:15px; }
+.verification-box { margin-top:14px; background:#f9fafb; padding:12px; border-radius:12px; }
