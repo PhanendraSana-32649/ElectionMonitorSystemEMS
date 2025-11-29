@@ -4,19 +4,20 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Login | Election System</title>
+
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 </head>
 
-<body class="login-body">
+<body class="login-body">   <!-- IMPORTANT -->
 
 <div class="login-box">
   <h2>Login</h2>
 
-  <input type="email" id="loginEmail" placeholder="Email" required />
-  <input type="password" id="loginPassword" placeholder="Password" required />
+  <input id="loginEmail" type="email" placeholder="Email" />
+  <input id="loginPassword" type="password" placeholder="Password" />
 
-  <select id="loginRole" required>
+  <select id="loginRole">
     <option disabled selected>Select Role</option>
     <option value="admin">Admin</option>
     <option value="citizen">Citizen</option>
@@ -33,28 +34,18 @@
 
 <script>
 function loginUser() {
-  const email = document.getElementById("loginEmail").value.trim();
-  const pass = document.getElementById("loginPassword").value.trim();
-  const role = document.getElementById("loginRole").value;
-
-  if (!email || !pass || !role) {
-    alert("Enter all fields");
-    return;
-  }
+  const email = loginEmail.value.trim();
+  const pass = loginPassword.value.trim();
+  const role = loginRole.value;
 
   const users = JSON.parse(localStorage.getItem("emsUsers") || "[]");
   const found = users.find(u => u.email === email && u.password === pass && u.role === role);
 
-  if (!found) {
-    alert("Incorrect credentials or role mismatch");
-    return;
-  }
-
+  if (!found) return alert("Invalid Login");
   localStorage.setItem("loggedUser", JSON.stringify(found));
   localStorage.setItem("userRole", found.role);
   window.location.href = "index.html";
 }
 </script>
-
 </body>
 </html>
