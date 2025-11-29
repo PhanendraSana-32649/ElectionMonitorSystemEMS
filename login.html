@@ -1,73 +1,39 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Login - Election Monitoring System</title>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
-
-<style>
-body{
-  margin:0; padding:0; background:#0b2f6a;
-  font-family:"Poppins",sans-serif;display:flex;
-  height:100vh;justify-content:center;align-items:center;
-}
-
-.login-box{
-  width:360px;background:white;padding:35px;
-  border-radius:14px; box-shadow:0 4px 18px rgba(0,0,0,0.2);
-  text-align:center;
-}
-
-.login-box h2{ margin-bottom:20px;color:#0b2f6a;}
-input, select{
-  width:100%;padding:12px;margin-top:12px;
-  border-radius:8px;border:1px solid #ccc;
-  font-size:15px;
-}
-
-button{
-  width:100%; padding:12px; margin-top:15px;
-  background:#1b4bbf; color:white; border:none;
-  font-size:16px; border-radius:8px; cursor:pointer;
-  transition:0.3s;
-}
-button:hover{background:#0b2f6a;}
-
-</style>
+  <meta charset="UTF-8" />
+  <title>Login - Election Monitoring System</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap"
+    rel="stylesheet"
+  />
+  <link rel="stylesheet" href="style.css" />
 </head>
+<body class="login-body">
+  <div class="login-box">
+    <h2>Login</h2>
+    <input type="text" id="username" placeholder="Enter Username" required />
+    <input type="password" id="password" placeholder="Enter Password" required />
+    <select id="role" required>
+      <option value="" disabled selected>Select Role</option>
+      <option value="admin">Admin</option>
+      <option value="citizen">Citizen</option>
+      <option value="observer">Observer</option>
+      <option value="analyst">Data Analyst</option>
+    </select>
+    <button onclick="login()">Login</button>
+  </div>
 
-<body>
-
-<div class="login-box">
-  <h2>Login</h2>
-
-  <input type="text" id="username" placeholder="Enter Username" required>
-  <input type="password" id="password" placeholder="Enter Password" required>
-
-  <select id="role" required>
-    <option value="" disabled selected>Select Role</option>
-    <option value="admin">Admin</option>
-    <option value="citizen">Citizen</option>
-    <option value="observer">Observer</option>
-    <option value="analyst">Data Analyst</option>
-  </select>
-
-  <button onclick="login()">Login</button>
-</div>
-
-<script>
-function login(){
-  const role = document.getElementById("role").value;
-  if(!role){
-    alert("Please select a role");
-    return;
-  }
-
-  localStorage.setItem("userRole", role);
-  window.location.href = "index.html";
-}
-</script>
-
+  <script>
+    function login() {
+      const role = document.getElementById("role").value;
+      if (!role) {
+        alert("Please select a role");
+        return;
+      }
+      localStorage.setItem("userRole", role);
+      window.location.href = "index.html";
+    }
+  </script>
 </body>
 </html>
