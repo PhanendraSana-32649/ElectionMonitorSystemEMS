@@ -17,7 +17,6 @@
       <p>Ensuring Transparency, Trust & Fair Elections</p>
       <p id="roleDisplay" class="role-display"></p>
     </div>
-
     <div class="header-right">
       <button id="themeToggle" class="theme-toggle">🌙 Dark Mode</button>
       <a href="login.html" class="logout-btn">Logout</a>
@@ -35,49 +34,21 @@
     <a onclick="showSection('chat')">Discussions</a>
   </nav>
 
-  <!-- ========== ROLE SPECIFIC DASHBOARDS ========== -->
-
-  <!-- ADMIN -->
+  <!-- ===================== ADMIN ======================= -->
   <section id="adminPanel" class="section">
     <h2>Admin Dashboard</h2>
-    <p class="section-subtitle">Manage users, complaints & system overview.</p>
+    <p class="section-subtitle">Manage users, complaints & monitoring overview.</p>
 
     <div class="cards-container">
-      <div class="stat-card">
-        <div class="stat-icon">👥</div>
-        <div>
-          <h3>Total Users</h3>
-          <p id="totalUsers">0</p>
-        </div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-icon">📨</div>
-        <div>
-          <h3>Total Complaints</h3>
-          <p id="adminTotalComplaints">0</p>
-        </div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-icon">⏳</div>
-        <div>
-          <h3>Pending Complaints</h3>
-          <p id="adminPendingComplaints">0</p>
-        </div>
-      </div>
+      <div class="stat-card"><div class="stat-icon">👥</div><div><h3>Total Users</h3><p id="totalUsers">0</p></div></div>
+      <div class="stat-card"><div class="stat-icon">📨</div><div><h3>Total Complaints</h3><p id="adminTotalComplaints">0</p></div></div>
+      <div class="stat-card"><div class="stat-icon">⏳</div><div><h3>Pending Complaints</h3><p id="adminPendingComplaints">0</p></div></div>
     </div>
 
     <h3 class="section-title">Registered Users</h3>
     <div class="table-wrapper">
       <table class="data-table">
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Role</th>
-            <th>Status</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
+        <thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Status</th><th>Actions</th></tr></thead>
         <tbody id="usersTableBody"></tbody>
       </table>
     </div>
@@ -86,52 +57,24 @@
     <div class="table-wrapper">
       <table class="data-table">
         <thead>
-          <tr>
-            <th>ID</th>
-            <th>Location</th>
-            <th>Category</th>
-            <th>Severity</th>
-            <th>Status</th>
-            <th>Change Status</th>
-          </tr>
+          <tr><th>ID</th><th>Location</th><th>Category</th><th>Severity</th><th>Status</th><th>Change Status</th></tr>
         </thead>
         <tbody id="adminComplaintsBody"></tbody>
       </table>
     </div>
   </section>
 
-  <!-- CITIZEN -->
+  <!-- ===================== CITIZEN ======================= -->
   <section id="citizenDashboard" class="section">
     <h2>Citizen Dashboard</h2>
-    <p class="section-subtitle">
-      Report issues, follow live results & stay informed.
-    </p>
-
-    <button class="primary-btn bounce" onclick="openReportModal()">+ Report New Issue</button>
-
-    <div class="citizen-quick">
-      <div class="hint-card">
-        <h3>How your report helps</h3>
-        <p>Your complaint gets logged instantly, highlighted for observers & admins, and contributes to fair elections.</p>
-      </div>
-      <div class="hint-card">
-        <h3>What to report?</h3>
-        <ul>
-          <li>Voter intimidation or bribery</li>
-          <li>Booth capturing or obstruction</li>
-          <li>EVM malfunction or technical issue</li>
-          <li>Fake news or misinformation</li>
-        </ul>
-      </div>
-    </div>
+    <p class="section-subtitle">Report issues, track results & stay informed.</p>
+    <button class="primary-btn" onclick="openReportModal()"> + Report Issue </button>
   </section>
 
-  <!-- OBSERVER -->
+  <!-- ===================== OBSERVER ======================= -->
   <section id="observerDashboard" class="section">
     <h2>Observer Panel</h2>
-    <p class="section-subtitle">
-      Submit booth reports and monitor polling conditions.
-    </p>
+    <p class="section-subtitle">Submit booth condition reports.</p>
 
     <div class="two-column">
       <div class="card-block">
@@ -141,18 +84,13 @@
           <input type="text" id="boothLocation" placeholder="Location" required />
           <select id="boothEvmStatus" required>
             <option disabled selected>EVM Status</option>
-            <option value="Working Fine">Working Fine</option>
-            <option value="Minor Issues">Minor Issues</option>
-            <option value="Major Failure">Major Failure</option>
+            <option>Working Fine</option><option>Minor Issues</option><option>Major Failure</option>
           </select>
           <select id="boothCrowd" required>
-            <option disabled selected>Queue Length</option>
-            <option>Low</option>
-            <option>Moderate</option>
-            <option>High</option>
+            <option disabled selected>Queue Length</option><option>Low</option><option>Moderate</option><option>High</option>
           </select>
           <textarea id="boothNotes" placeholder="Notes / Observations" required></textarea>
-          <button class="primary-btn" type="submit">Submit Report</button>
+          <button class="primary-btn">Submit</button>
         </form>
       </div>
 
@@ -163,37 +101,23 @@
     </div>
   </section>
 
-  <!-- ANALYST -->
+  <!-- ===================== ANALYST ======================= -->
   <section id="analystDashboard" class="section">
     <h2>Analytics Dashboard</h2>
-    <p class="section-subtitle">
-      Visual insights for complaints and voting patterns.
-    </p>
+    <p class="section-subtitle">Visual complaint & vote statistics.</p>
 
     <div class="charts-row">
-      <div class="chart-card">
-        <h3>Complaints by Category</h3>
-        <canvas id="analystComplaintsChart"></canvas>
-      </div>
-      <div class="chart-card">
-        <h3>Severity Distribution</h3>
-        <canvas id="analystSeverityChart"></canvas>
-      </div>
+      <div class="chart-card"><h3>Complaints by Category</h3><canvas id="analystComplaintsChart"></canvas></div>
+      <div class="chart-card"><h3>Severity Distribution</h3><canvas id="analystSeverityChart"></canvas></div>
     </div>
 
     <div class="charts-row">
-      <div class="chart-card">
-        <h3>Verified vs Pending Votes</h3>
-        <canvas id="analystVerifyChart"></canvas>
-      </div>
-      <div class="chart-card">
-        <h3>Complaints Over Time (Demo)</h3>
-        <canvas id="analystTimelineChart"></canvas>
-      </div>
+      <div class="chart-card"><h3>Verified vs Pending Votes</h3><canvas id="analystVerifyChart"></canvas></div>
+      <div class="chart-card"><h3>Complaints Timeline</h3><canvas id="analystTimelineChart"></canvas></div>
     </div>
   </section>
 
-  <!-- ========== LIVE VOTES SECTION ========== -->
+  <!-- ===================== LIVE VOTES ======================= -->
   <section id="livevotes" class="section">
     <div class="section-header">
       <h2>🔴 LIVE Vote Counting</h2>
@@ -201,116 +125,85 @@
     </div>
 
     <div class="live-controls">
-      <button class="primary-btn" onclick="castVote('ABC')">Vote PARTY A</button>
-      <button class="primary-btn" onclick="castVote('XYZ')">Vote PARTY B</button>
-      <button class="primary-btn" onclick="castVote('IND')">Vote PARTY C</button>
+      <button class="primary-btn" onclick="castVote('ABC')">Vote A</button>
+      <button class="primary-btn" onclick="castVote('XYZ')">Vote B</button>
+      <button class="primary-btn" onclick="castVote('IND')">Vote C</button>
     </div>
 
     <div class="leaderboard">
-      <h3>Party Vote Leaderboard</h3>
+      <h3>Party Leaderboard</h3>
       <div id="leaderboardContent"></div>
     </div>
 
     <div class="verification-box">
-      <h3>Verification & Blockchain Log (Simulated)</h3>
-      <p><strong>Verified Votes:</strong> <span id="verVotes">0</span></p>
-      <p><strong>Pending Verification:</strong> <span id="unverVotes">0</span></p>
-      <p><strong>Current Block Hash:</strong> <span id="hashValue"></span></p>
+      <h3>Verification & Blockchain Log</h3>
+      <p><strong>Verified:</strong> <span id="verVotes">0</span></p>
+      <p><strong>Pending:</strong> <span id="unverVotes">0</span></p>
+      <p><strong>Block Hash:</strong> <span id="hashValue">--</span></p>
       <div id="blockchainLog" class="blockchain-log"></div>
     </div>
 
     <div class="charts-row">
       <div class="chart-card">
-        <h3>Live Votes by Party</h3>
-        <canvas id="turnoutChart"></canvas>
+        <h3>Live Votes Chart</h3>
+        <canvas id="liveVotesChart"></canvas>
       </div>
       <div class="chart-card">
-        <h3>Verified vs Pending</h3>
+        <h3>Verification</h3>
         <canvas id="verifyChart"></canvas>
       </div>
     </div>
   </section>
 
-  <!-- ========== COMPLAINTS SECTION ========== -->
+  <!-- ===================== COMPLAINTS ======================= -->
   <section id="track" class="section">
-    <h2>Complaints & Issue Tracking</h2>
-    <div class="track-header">
-      <input type="text" id="complaintSearch" placeholder="Search complaints..." />
-      <span class="track-hint">🔍 Search by ID, location, category, severity, or description.</span>
-    </div>
-
+    <h2>Complaints Tracking</h2>
+    <input type="text" id="complaintSearch" placeholder="Search complaints..." />
     <div id="complaintsContainer" class="complaints-list"></div>
-    <p id="noComplaintsMsg" class="no-data-msg">No complaints yet. Citizens can submit from their dashboard.</p>
+    <p id="noComplaintsMsg" class="no-data-msg">No complaints found yet.</p>
   </section>
 
-  <!-- ========== DISCUSSION / CHAT ========== -->
+  <!-- ===================== CHAT ======================= -->
   <section id="chat" class="section">
-    <h2>Civic Discussions & Coordination</h2>
-    <p class="section-subtitle">Lightweight chat between roles (saved in this browser only).</p>
-
+    <h2>Discussions</h2>
     <div class="chat-wrapper">
       <div id="chatMessages" class="chat-messages"></div>
       <div class="chat-input-row">
-        <input type="text" id="chatInput" placeholder="Type a message..." />
+        <input type="text" id="chatInput" placeholder="Type message..." />
         <button class="primary-btn" onclick="sendChatMessage()">Send</button>
       </div>
     </div>
   </section>
 
-  <!-- ========== VOTER VERIFICATION ========== -->
+  <!-- ===================== VOTER VERIFICATION ======================= -->
   <section id="verify" class="section">
     <h2>Voter Verification (Demo)</h2>
-    <p>Check voter ID string format for basic validation (simulation only).</p>
-
     <div class="verify-box">
-      <input type="text" id="voterIdInput" placeholder="Enter Voter ID (e.g., ABC123456)" />
+      <input type="text" id="voterIdInput" placeholder="Enter Voter ID (ABC1234)" />
       <button class="primary-btn" onclick="verifyVoterId()">Verify</button>
     </div>
-
     <p id="voterResult" class="verify-result"></p>
   </section>
 
-  <!-- ========== REPORT MODAL ========== -->
+  <!-- ===================== MODAL ======================= -->
   <div id="reportModal" class="modal">
     <div class="modal-content">
       <h3>New Complaint</h3>
       <form id="reportForm" onsubmit="submitReport(event)">
-        <div class="form-row">
-          <label>Your Name</label>
-          <input type="text" id="repName" required />
-        </div>
-        <div class="form-row">
-          <label>Location / Booth ID</label>
-          <input type="text" id="repLocation" required />
-        </div>
-        <div class="form-row">
-          <label>Category</label>
-          <select id="repCategory" required>
-            <option disabled selected>Select Category</option>
-            <option>Fraud / Malpractice</option>
-            <option>Violence / Intimidation</option>
-            <option>Technical Issue (EVM)</option>
-            <option>Booth Management</option>
-            <option>Other</option>
-          </select>
-        </div>
-        <div class="form-row">
-          <label>Severity</label>
-          <select id="repSeverity" required>
-            <option disabled selected>Select Severity</option>
-            <option>Low</option>
-            <option>Medium</option>
-            <option>High</option>
-            <option>Critical</option>
-          </select>
-        </div>
-        <div class="form-row">
-          <label>Description</label>
-          <textarea id="repDescription" rows="3" required></textarea>
-        </div>
+        <input type="text" id="repName" placeholder="Your Name" required />
+        <input type="text" id="repLocation" placeholder="Location" required />
+        <select id="repCategory" required>
+          <option disabled selected>Category</option>
+          <option>Fraud / Malpractice</option><option>Violence</option><option>EVM Issue</option><option>Booth Management</option>
+        </select>
+        <select id="repSeverity" required>
+          <option disabled selected>Severity</option>
+          <option>Low</option><option>Medium</option><option>High</option><option>Critical</option>
+        </select>
+        <textarea id="repDescription" placeholder="Description" required></textarea>
         <div class="modal-actions">
           <button type="button" class="secondary-btn" onclick="closeReportModal()">Cancel</button>
-          <button type="submit" class="primary-btn">Submit</button>
+          <button class="primary-btn">Submit</button>
         </div>
       </form>
     </div>
@@ -319,27 +212,21 @@
   <!-- TOAST -->
   <div id="toast" class="toast"></div>
 
-  <!-- ========== SCRIPT ========== -->
+  <!-- ===================== SCRIPT ======================= -->
   <script>
-    // ===== BASIC UTIL =====
-    const $ = (id) => document.getElementById(id);
+    const $ = id => document.getElementById(id);
 
-    // ===== THEME =====
+    // ---- THEME ----
     function loadTheme() {
       const saved = localStorage.getItem("emsTheme");
-      if (saved === "dark") {
-        document.body.classList.add("dark");
-        $("themeToggle").textContent = "☀️ Light Mode";
-      }
+      if (saved === "dark") document.body.classList.add("dark");
     }
-    $("themeToggle").addEventListener("click", () => {
+    $("themeToggle").onclick = () => {
       document.body.classList.toggle("dark");
-      const isDark = document.body.classList.contains("dark");
-      $("themeToggle").textContent = isDark ? "☀️ Light Mode" : "🌙 Dark Mode";
-      localStorage.setItem("emsTheme", isDark ? "dark" : "light");
-    });
+      localStorage.setItem("emsTheme", document.body.classList.contains("dark") ? "dark" : "light");
+    };
 
-    // ===== ROLE DISPLAY / PERMISSIONS =====
+    // ---- ROLE ----
     function loadRole() {
       const role = localStorage.getItem("userRole") || "citizen";
       $("roleDisplay").textContent = "Logged in as: " + role.toUpperCase();
@@ -348,288 +235,35 @@
 
     function showSection(id) {
       document.querySelectorAll(".section").forEach(sec => sec.style.display = "none");
-      const el = $(id);
-      if (el) el.style.display = "block";
+      $(id).style.display = "block";
     }
 
     function applyRolePermissions() {
       const role = loadRole();
+      document.querySelectorAll(".menu-admin,.menu-citizen,.menu-observer,.menu-analyst").forEach(e => e.style.display = "none");
 
-      document.querySelectorAll(".menu-admin,.menu-citizen,.menu-observer,.menu-analyst")
-        .forEach(el => el.style.display = "none");
-
-      document.querySelectorAll("#adminPanel,#citizenDashboard,#observerDashboard,#analystDashboard")
-        .forEach(el => el.style.display = "none");
-
-      if (role === "admin") {
-        document.querySelector(".menu-admin").style.display = "block";
-        $("adminPanel").style.display = "block";
-      } else if (role === "citizen") {
-        document.querySelector(".menu-citizen").style.display = "block";
-        $("citizenDashboard").style.display = "block";
-      } else if (role === "observer") {
-        document.querySelector(".menu-observer").style.display = "block";
-        $("observerDashboard").style.display = "block";
-      } else if (role === "analyst") {
-        document.querySelector(".menu-analyst").style.display = "block";
-        $("analystDashboard").style.display = "block";
-      }
+      if (role === "admin") document.querySelector(".menu-admin").style.display = "block";
+      if (role === "citizen") document.querySelector(".menu-citizen").style.display = "block";
+      if (role === "observer") document.querySelector(".menu-observer").style.display = "block";
+      if (role === "analyst") document.querySelector(".menu-analyst").style.display = "block";
 
       $("livevotes").style.display = "block";
     }
 
-    // ===== TOAST =====
+    // ---- TOAST ----
     function showToast(msg) {
-      const t = $("toast");
-      t.textContent = msg;
-      t.classList.add("show");
-      setTimeout(() => t.classList.remove("show"), 2500);
+      $("toast").textContent = msg;
+      $("toast").classList.add("show");
+      setTimeout(() => $("toast").classList.remove("show"), 2500);
     }
 
-    // ===== VOTER VERIFICATION DEMO =====
-    function verifyVoterId() {
-      const input = $("voterIdInput").value.trim();
-      const result = $("voterResult");
-      if (!input) {
-        result.textContent = "Please enter a Voter ID.";
-        result.className = "verify-result error";
-        return;
-      }
-      const hasLetters = /[A-Za-z]/.test(input);
-      const hasDigits = /\d/.test(input);
-      if (input.length >= 6 && hasLetters && hasDigits) {
-        result.textContent = "Voter ID format looks valid. (Demo only)";
-        result.className = "verify-result success";
-      } else {
-        result.textContent = "Invalid Voter ID format.";
-        result.className = "verify-result error";
-      }
-    }
-
-    // ===== MODAL =====
-    function openReportModal() { $("reportModal").style.display = "flex"; }
-    function closeReportModal() { $("reportModal").style.display = "none"; }
-
-    window.addEventListener("click", (e) => {
-      if (e.target === $("reportModal")) closeReportModal();
-    });
-
-    // ===== COMPLAINTS =====
-    function getComplaints() {
-      return JSON.parse(localStorage.getItem("emsComplaints") || "[]");
-    }
-
-    function saveComplaints(list) {
-      localStorage.setItem("emsComplaints", JSON.stringify(list));
-    }
-
-    function submitReport(e) {
-      e.preventDefault();
-      const list = getComplaints();
-      const complaint = {
-        id: "CMP" + Date.now(),
-        name: $("repName").value.trim(),
-        location: $("repLocation").value.trim(),
-        category: $("repCategory").value,
-        severity: $("repSeverity").value,
-        description: $("repDescription").value.trim(),
-        status: "Pending",
-        createdAt: new Date().toLocaleString()
-      };
-      list.push(complaint);
-      saveComplaints(list);
-      $("reportForm").reset();
-      closeReportModal();
-      showToast("Complaint submitted");
-      renderComplaints();
-      renderAdminComplaints();
-      updateAdminStats();
-    }
-
-    function renderComplaints(searchText = "") {
-      const list = getComplaints();
-      const container = $("complaintsContainer");
-      const msg = $("noComplaintsMsg");
-
-      container.innerHTML = "";
-      let filtered = list;
-      if (searchText) {
-        const t = searchText.toLowerCase();
-        filtered = list.filter(c =>
-          (c.id + " " + c.location + " " + c.category + " " + c.severity + " " + c.description)
-            .toLowerCase()
-            .includes(t)
-        );
-      }
-
-      if (filtered.length === 0) {
-        msg.style.display = "block";
-        return;
-      } else msg.style.display = "none";
-
-      filtered.forEach(c => {
-        const card = document.createElement("div");
-        card.className = "complaint-card";
-        card.innerHTML = `
-          <div class="complaint-header">
-            <span class="complaint-id">${c.id}</span>
-            <span class="status badge-${c.status.toLowerCase()}">${c.status}</span>
-          </div>
-          <p class="complaint-meta"><strong>Location:</strong> ${c.location}</p>
-          <p class="complaint-meta"><strong>Category:</strong> ${c.category} | <strong>Severity:</strong> ${c.severity}</p>
-          <p class="complaint-desc">${c.description}</p>
-          <p class="complaint-time">${c.createdAt}</p>
-        `;
-        container.appendChild(card);
-      });
-    }
-
-    $("complaintSearch").addEventListener("input", (e) => {
-      renderComplaints(e.target.value.trim());
-    });
-
-    // ===== ADMIN – USER TABLE =====
-    function getUsers() {
-      return JSON.parse(localStorage.getItem("emsUsers") || "[]");
-    }
-    function saveUsers(list) {
-      localStorage.setItem("emsUsers", JSON.stringify(list));
-    }
-
-    function renderUsersTable() {
-      const users = getUsers();
-      $("totalUsers").textContent = users.length;
-      const body = $("usersTableBody");
-      body.innerHTML = "";
-      users.forEach((u, index) => {
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td>${u.name}</td>
-          <td>${u.email}</td>
-          <td>${u.role}</td>
-          <td>${u.status || "active"}</td>
-          <td>
-            <button class="table-btn" onclick="toggleUserStatus(${index})">Toggle Status</button>
-            <button class="table-btn danger" onclick="deleteUser(${index})">Delete</button>
-          </td>
-        `;
-        body.appendChild(tr);
-      });
-    }
-
-    function toggleUserStatus(index) {
-      const users = getUsers();
-      users[index].status = users[index].status === "blocked" ? "active" : "blocked";
-      saveUsers(users);
-      renderUsersTable();
-      showToast("User status updated");
-    }
-
-    function deleteUser(index) {
-      const users = getUsers();
-      users.splice(index, 1);
-      saveUsers(users);
-      renderUsersTable();
-      showToast("User deleted");
-    }
-
-    // ===== ADMIN – COMPLAINT CONTROL =====
-    function renderAdminComplaints() {
-      const list = getComplaints();
-      const body = $("adminComplaintsBody");
-      body.innerHTML = "";
-      list.forEach((c, i) => {
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td>${c.id}</td>
-          <td>${c.location}</td>
-          <td>${c.category}</td>
-          <td>${c.severity}</td>
-          <td>${c.status}</td>
-          <td>
-            <button class="table-btn" onclick="changeComplaintStatus(${i}, 'Approved')">Approve</button>
-            <button class="table-btn danger" onclick="changeComplaintStatus(${i}, 'Rejected')">Reject</button>
-            <button class="table-btn" onclick="changeComplaintStatus(${i}, 'Resolved')">Resolve</button>
-          </td>
-        `;
-        body.appendChild(tr);
-      });
-    }
-
-    function changeComplaintStatus(index, status) {
-      const list = getComplaints();
-      list[index].status = status;
-      saveComplaints(list);
-      renderComplaints();
-      renderAdminComplaints();
-      updateAdminStats();
-      showToast("Complaint status changed to " + status);
-    }
-
-    function updateAdminStats() {
-      const list = getComplaints();
-      $("adminTotalComplaints").textContent = list.length;
-      $("adminPendingComplaints").textContent = list.filter(c => c.status === "Pending").length;
-    }
-
-    // ===== OBSERVER – BOOTH REPORTS =====
-    function getBoothReports() {
-      return JSON.parse(localStorage.getItem("emsBoothReports") || "[]");
-    }
-    function saveBoothReports(list) {
-      localStorage.setItem("emsBoothReports", JSON.stringify(list));
-    }
-
-    function submitBoothReport(e) {
-      e.preventDefault();
-      const list = getBoothReports();
-      list.push({
-        boothId: $("boothId").value.trim(),
-        location: $("boothLocation").value.trim(),
-        evmStatus: $("boothEvmStatus").value,
-        crowd: $("boothCrowd").value,
-        notes: $("boothNotes").value.trim(),
-        time: new Date().toLocaleTimeString()
-      });
-      saveBoothReports(list);
-      $("boothForm").reset();
-      renderBoothReports();
-      showToast("Booth report submitted");
-    }
-
-    function renderBoothReports() {
-      const list = getBoothReports();
-      const container = $("boothReportsContainer");
-      container.innerHTML = "";
-      if (list.length === 0) {
-        container.innerHTML = `<p class="no-data-msg">No booth reports submitted yet.</p>`;
-        return;
-      }
-      list.slice().reverse().forEach(r => {
-        const div = document.createElement("div");
-        div.className = "booth-card";
-        div.innerHTML = `
-          <p><strong>Booth:</strong> ${r.boothId} (${r.location})</p>
-          <p><strong>EVM:</strong> ${r.evmStatus} | <strong>Queue:</strong> ${r.crowd}</p>
-          <p>${r.notes}</p>
-          <p class="complaint-time">${r.time}</p>
-        `;
-        container.appendChild(div);
-      });
-    }
-
-    // ===== LIVE VOTES + BLOCKCHAIN SIM =====
+    // ---- LIVE VOTES ----
     function getLiveVotes() {
-      return JSON.parse(localStorage.getItem("liveVotes") || JSON.stringify({
-        ABC: 0, XYZ: 0, IND: 0, verified: 0, unverified: 0, blocks: []
-      }));
+      return JSON.parse(localStorage.getItem("liveVotes") || JSON.stringify({ ABC: 0, XYZ: 0, IND: 0, verified: 0, unverified: 0, blocks: [] }));
     }
-    function saveLiveVotes(d) {
-      localStorage.setItem("liveVotes", JSON.stringify(d));
-    }
+    function saveLiveVotes(d) { localStorage.setItem("liveVotes", JSON.stringify(d)); }
 
-    let liveChart = null;
-    let verificationChart = null;
+    let liveChart = null, verificationChart = null;
 
     function castVote(party) {
       const d = getLiveVotes();
@@ -647,62 +281,48 @@
 
       saveLiveVotes(d);
       updateLiveVotesUI();
-      showToast("Vote cast for " + party);
     }
 
     setInterval(() => {
-      const parties = ["ABC", "XYZ", "IND"];
-      castVote(parties[Math.floor(Math.random() * 3)]);
-    }, 9000); // slow auto-sim
+      castVote(["ABC", "XYZ", "IND"][Math.floor(Math.random() * 3)]);
+    }, 8000);
 
     function updateLiveVotesUI() {
       const d = getLiveVotes();
+
       $("verVotes").textContent = d.verified;
       $("unverVotes").textContent = d.unverified;
-      $("hashValue").textContent = d.blocks.length ? d.blocks[d.blocks.length - 1].hash : "—";
       $("lastUpdated").textContent = "Last Updated: " + new Date().toLocaleTimeString();
+      $("hashValue").textContent = d.blocks.length ? d.blocks[d.blocks.length - 1].hash : "--";
 
-      const sorted = Object.entries({ ABC: d.ABC, XYZ: d.XYZ, IND: d.IND })
-        .sort((a, b) => b[1] - a[1]);
-      $("leaderboardContent").innerHTML = sorted.map(p =>
-        `<div class="leader-row"><span>${p[0]}</span><span>${p[1]} votes</span></div>`
-      ).join("");
+      const sorted = Object.entries({ ABC: d.ABC, XYZ: d.XYZ, IND: d.IND }).sort((a, b) => b[1] - a[1]);
+      $("leaderboardContent").innerHTML = sorted.map(p => `<div class="leader-row"><span>${p[0]}</span><span>${p[1]} votes</span></div>`).join("");
 
       const log = $("blockchainLog");
       log.innerHTML = "";
       d.blocks.slice().reverse().slice(0, 6).forEach(b => {
         const div = document.createElement("div");
         div.className = "block-card";
-        div.innerHTML = `
-          <p><strong>${b.time}</strong> – Party ${b.party}</p>
-          <p>Votes so far: ${b.totalVotes}</p>
-          <p>Hash: ${b.hash}</p>
-          <p class="small">Prev: ${b.prevHash}</p>
-        `;
+        div.innerHTML = `<p><strong>${b.time}</strong> – Party ${b.party}</p><p>Votes so far: ${b.totalVotes}</p><p>Hash: ${b.hash}</p><p class="small">Prev: ${b.prevHash}</p>`;
         log.appendChild(div);
       });
 
-      const ctx1 = $("turnoutChart").getContext("2d");
-      const ctx2 = $("verifyChart").getContext("2d");
+      const ctx1 = $("liveVotesChart").getContext("2d");
       if (!liveChart) {
         liveChart = new Chart(ctx1, {
           type: "bar",
-          data: {
-            labels: ["ABC", "XYZ", "IND"],
-            datasets: [{ data: [d.ABC, d.XYZ, d.IND], borderWidth: 1 }]
-          }
+          data: { labels: ["ABC", "XYZ", "IND"], datasets: [{ data: [d.ABC, d.XYZ, d.IND], borderWidth: 1 }] }
         });
       } else {
         liveChart.data.datasets[0].data = [d.ABC, d.XYZ, d.IND];
         liveChart.update();
       }
+
+      const ctx2 = $("verifyChart").getContext("2d");
       if (!verificationChart) {
         verificationChart = new Chart(ctx2, {
           type: "pie",
-          data: {
-            labels: ["Verified", "Pending"],
-            datasets: [{ data: [d.verified, d.unverified] }]
-          }
+          data: { labels: ["Verified", "Pending"], datasets: [{ data: [d.verified, d.unverified] }] }
         });
       } else {
         verificationChart.data.datasets[0].data = [d.verified, d.unverified];
@@ -710,136 +330,11 @@
       }
     }
 
-    // ===== ANALYST CHARTS =====
-    let analystComplaintChart = null;
-    let analystSeverityChart = null;
-    let analystVerifyChart = null;
-    let analystTimelineChart = null;
-
-    function renderAnalystCharts() {
-      const complaints = getComplaints();
-      const votes = getLiveVotes();
-
-      // Complaints by category
-      const catCount = {};
-      complaints.forEach(c => catCount[c.category] = (catCount[c.category] || 0) + 1);
-      const catLabels = Object.keys(catCount);
-      const catData = Object.values(catCount);
-
-      const ctx1 = $("analystComplaintsChart").getContext("2d");
-      if (!analystComplaintChart) {
-        analystComplaintChart = new Chart(ctx1, {
-          type: "bar",
-          data: { labels: catLabels, datasets: [{ data: catData, borderWidth: 1 }] },
-          options: { plugins: { legend: { display: false } } }
-        });
-      } else {
-        analystComplaintChart.data.labels = catLabels;
-        analystComplaintChart.data.datasets[0].data = catData;
-        analystComplaintChart.update();
-      }
-
-      // Severity chart
-      const sevCount = {};
-      complaints.forEach(c => sevCount[c.severity] = (sevCount[c.severity] || 0) + 1);
-      const sevLabels = Object.keys(sevCount);
-      const sevData = Object.values(sevCount);
-      const ctx2 = $("analystSeverityChart").getContext("2d");
-      if (!analystSeverityChart) {
-        analystSeverityChart = new Chart(ctx2, {
-          type: "pie",
-          data: { labels: sevLabels, datasets: [{ data: sevData }] }
-        });
-      } else {
-        analystSeverityChart.data.labels = sevLabels;
-        analystSeverityChart.data.datasets[0].data = sevData;
-        analystSeverityChart.update();
-      }
-
-      // Verify vs pending bar
-      const ctx3 = $("analystVerifyChart").getContext("2d");
-      if (!analystVerifyChart) {
-        analystVerifyChart = new Chart(ctx3, {
-          type: "bar",
-          data: {
-            labels: ["Verified", "Pending"],
-            datasets: [{ data: [votes.verified, votes.unverified], borderWidth: 1 }]
-          },
-          options: { plugins: { legend: { display: false } } }
-        });
-      } else {
-        analystVerifyChart.data.datasets[0].data = [votes.verified, votes.unverified];
-        analystVerifyChart.update();
-      }
-
-      // Fake timeline data
-      const ctx4 = $("analystTimelineChart").getContext("2d");
-      const days = ["8 AM", "10 AM", "12 PM", "2 PM", "4 PM"];
-      const timelineData = days.map((_, idx) => (complaints.length * (idx + 1)) / days.length);
-      if (!analystTimelineChart) {
-        analystTimelineChart = new Chart(ctx4, {
-          type: "line",
-          data: { labels: days, datasets: [{ data: timelineData, tension: 0.4 }] },
-          options: { plugins: { legend: { display: false } } }
-        });
-      } else {
-        analystTimelineChart.data.datasets[0].data = timelineData;
-        analystTimelineChart.update();
-      }
-    }
-
-    // ===== CHAT =====
-    function getChatMessages() {
-      return JSON.parse(localStorage.getItem("emsChat") || "[]");
-    }
-    function saveChatMessages(list) {
-      localStorage.setItem("emsChat", JSON.stringify(list));
-    }
-
-    function renderChat() {
-      const list = getChatMessages();
-      const box = $("chatMessages");
-      const role = localStorage.getItem("userRole") || "citizen";
-      box.innerHTML = "";
-      list.forEach(m => {
-        const div = document.createElement("div");
-        div.className = "chat-message " + (m.role === role ? "me" : "other");
-        div.innerHTML = `<span class="chat-meta">${m.name} (${m.role})</span><p>${m.text}</p><span class="chat-time">${m.time}</span>`;
-        box.appendChild(div);
-      });
-      box.scrollTop = box.scrollHeight;
-    }
-
-    function sendChatMessage() {
-      const input = $("chatInput");
-      const text = input.value.trim();
-      if (!text) return;
-      const user = JSON.parse(localStorage.getItem("loggedUser") || "{}");
-      const role = localStorage.getItem("userRole") || "citizen";
-      const list = getChatMessages();
-      list.push({
-        name: user.name || "User",
-        role,
-        text,
-        time: new Date().toLocaleTimeString()
-      });
-      saveChatMessages(list);
-      input.value = "";
-      renderChat();
-    }
-
-    // ===== INIT =====
+    // ---- INIT ----
     window.addEventListener("DOMContentLoaded", () => {
       loadTheme();
       applyRolePermissions();
-      renderUsersTable();
-      renderComplaints();
-      renderAdminComplaints();
-      renderBoothReports();
       updateLiveVotesUI();
-      renderAnalystCharts();
-      renderChat();
-      updateAdminStats();
     });
   </script>
 </body>
