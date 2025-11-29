@@ -1,0 +1,666 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Election Monitoring System</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root{
+      --bg:#f4f8ff;
+      --card:#fff;
+      --primary:#0b5ed7;
+      --muted:#6c757d;
+      --success:#198754;
+      --danger:#dc3545;
+      --glass: rgba(255,255,255,0.6);
+    }
+    [data-theme="dark"]{
+      --bg:#071028;
+      --card:#0b1730;
+      --primary:#66a8ff;
+      --muted:#9fb2d8;
+      --glass: rgba(255,255,255,0.03);
+    }
+    *{box-sizing:border-box}
+    body{font-family:Inter,Segoe UI,Roboto,Arial,sans-serif;margin:0;background:linear-gradient(180deg,var(--bg),#eaf2ff);color:#0b2b4a}
+    .container{max-width:1100px;margin:28px auto;padding:18px}
+    header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{width:46px;height:46px;background:var(--primary);border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;box-shadow:0 6px 18px rgba(11,94,215,0.18)}
+    nav{display:flex;gap:10px;align-items:center}
+    nav button{background:transparent;border:0;padding:8px 12px;border-radius:8px;color:var(--primary);cursor:pointer}
+    nav button.active{background:rgba(11,94,215,0.08)}
+    .card{background:var(--card);border-radius:12px;padding:16px;box-shadow:0 8px 30px rgba(11,45,80,0.06);}
+    /* auth center */
+    .auth-wrap{display:flex;align-items:center;justify-content:center;height:70vh}
+    .auth-card{width:360px;padding:28px;border-radius:12px;background:linear-gradient(180deg,rgba(255,255,255,0.9),var(--card));box-shadow:0 12px 40px rgba(2,20,60,0.08)}
+    .auth-card h2{text-align:center;margin:0 0 8px}
+    .form-group{margin:10px 0}
+    input,select,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(11,45,80,0.08);outline:none}
+    input:focus,textarea:focus{box-shadow:0 4px 18px rgba(11,94,215,0.08);border-color:var(--primary)}
+    .btn{display:inline-block;background:var(--primary);color:#fff;padding:9px 14px;border-radius:8px;border:0;cursor:pointer}
+    .btn.ghost{background:transparent;color:var(--primary);border:1px solid rgba(11,94,215,0.12)}
+    .flex{display:flex;gap:12px;align-items:center}
+    .space-between{display:flex;justify-content:space-between}
+    /* layout */
+    .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+    .grid-2{display:grid;grid-template-columns:1fr 320px;gap:12px}
+    .small{font-size:13px;color:var(--muted)}
+    /* list */
+    .user-row{display:flex;justify-content:space-between;align-items:center;padding:10px;border-radius:8px;border:1px solid rgba(11,45,80,0.04);margin-bottom:8px}
+    .pill{padding:6px 10px;border-radius:999px;background:rgba(11,94,215,0.08);color:var(--primary);font-weight:600}
+    /* votes */
+    .vote-buttons{display:flex;gap:10px;margin-bottom:10px}
+    .vote-card{display:flex;gap:12px;align-items:center;justify-content:space-between}
+    /* complaint card */
+    .complaint{border-radius:10px;padding:12px;border:1px solid rgba(11,45,80,0.04);margin-bottom:10px}
+    .highlight{box-shadow:0 0 18px rgba(255,205,0,0.2);border:1px solid rgba(255,205,0,0.3)}
+    .search-term{background:linear-gradient(90deg,#fff59d,#ffd54f);padding:2px 4px;border-radius:4px}
+    @keyframes glow{0%{box-shadow:0 0 0 rgba(255,205,0,0)}50%{box-shadow:0 0 18px rgba(255,205,0,0.25)}100%{box-shadow:0 0 0 rgba(255,205,0,0)}}
+    .highlight{animation:glow 1.2s ease-in-out;}
+    .search{display:flex;gap:8px;margin-bottom:12px}
+    .chat{height:320px;overflow:auto;padding:12px;border-radius:8px;border:1px solid rgba(11,45,80,0.04)}
+    .bubble{display:inline-block;padding:10px 14px;border-radius:16px;margin:6px 0;max-width:80%}
+    .me{background:linear-gradient(90deg,var(--primary),#0a84ff);color:#fff;margin-left:auto}
+    .other{background:#eef6ff;color:var(--primary)}
+    /* modal */
+    .modal-backdrop{position:fixed;inset:0;background:rgba(3,10,30,0.5);display:flex;align-items:center;justify-content:center}
+    .modal{width:520px;background:var(--card);padding:18px;border-radius:12px}
+    /* responsive */
+    @media(max-width:900px){.grid-2{grid-template-columns:1fr}.grid-3{grid-template-columns:1fr}.auth-card{width:92%}}
+    @media(max-width:700px){
+      header{flex-direction:column;align-items:flex-start;gap:12px}
+      nav{flex-wrap:wrap}
+      .brand{width:100%;justify-content:space-between}
+      .container{padding:12px}
+      .grid-2{grid-template-columns:1fr}
+      .grid-3{grid-template-columns:1fr}
+      .vote-card{flex-direction:column;align-items:stretch}
+      canvas{max-width:100% !important;height:auto !important}
+      .auth-card{width:95%}
+    }
+  </style>
+</head>
+<body>
+  <div class="container" id="app" data-theme="light">
+    <header>
+      <div class="brand">
+        <div class="logo">EMS</div>
+        <div>
+          <div style="font-weight:700">Election Monitoring System</div>
+          <div class="small">Transparent. Secure. Accountable.</div>
+        </div>
+      </div>
+      <nav id="mainNav">
+        <button data-section="home" class="active" onclick="showSection('home')">Home</button>
+        <button data-section="live" onclick="showSection('live')">Live Votes</button>
+        <button data-section="complaints" onclick="showSection('complaints')">Complaints</button>
+        <button data-section="chat" onclick="showSection('chat')">Discussion</button>
+        <button data-section="settings" onclick="showSection('settings')">Settings</button>
+        <span id="navAuth"></span>
+      </nav>
+    </header>
+
+    <!-- SECTIONS -->
+    <main>
+      <section id="home" class="card" style="display:block">
+        <div class="space-between" style="align-items:center">
+          <div>
+            <h3>Welcome to the Election Monitoring System</h3>
+            <p class="small">Use the menu to navigate. Please login or signup to access dashboards.</p>
+          </div>
+          <div>
+            <button class="btn" id="openSignup" onclick="showSection('signup')">Signup</button>
+            <button class="btn ghost" id="homeLoginBtn" onclick="showSection('login')">Login</button>
+          </div>
+        </div>
+        <hr style="margin:12px 0">
+        <div class="grid-3" id="quickCards">
+          <div class="card">
+            <h4>Real-time Voting</h4>
+            <p class="small">Simulated live votes and transparent block log.</p>
+            <button class="btn" onclick="showSection('live')">Go to Live Votes</button>
+          </div>
+          <div class="card">
+            <h4>Report Complaints</h4>
+            <p class="small">Citizens can report issues to election officials.</p>
+            <button class="btn" onclick="openComplaintModal()">Report Issue</button>
+          </div>
+          <div class="card">
+            <h4>Observe Booths</h4>
+            <p class="small">Election observers can submit booth reports.</p>
+            <button class="btn" onclick="showSection('observer')">Observer Area</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- LOGIN -->
+      <section id="login" class="auth-wrap" style="display:none">
+        <div class="auth-card card">
+          <h2>Login</h2>
+          <div class="form-group">
+            <input id="loginEmail" placeholder="Email" />
+          </div>
+          <div class="form-group">
+            <input id="loginPassword" type="password" placeholder="Password" />
+          </div>
+          <div class="form-group">
+            <button class="btn" onclick="login()">Sign In</button>
+            <button class="btn ghost" onclick="showSection('signup')">Create account</button>
+          </div>
+          <div class="small">Demo roles available: Admin, Citizen, Election Observer, Data Analyst</div>
+        </div>
+      </section>
+
+      <!-- SIGNUP -->
+      <section id="signup" class="auth-wrap" style="display:none">
+        <div class="auth-card card">
+          <h2>Signup</h2>
+          <div class="form-group"><input id="suName" placeholder="Full name"/></div>
+          <div class="form-group"><input id="suEmail" placeholder="Email"/></div>
+          <div class="form-group"><input id="suPassword" type="password" placeholder="Password"/></div>
+          <div class="form-group">
+            <select id="suRole">
+              <option>Citizen</option>
+              <option>Admin</option>
+              <option>Election Observer</option>
+              <option>Data Analyst</option>
+            </select>
+          </div>
+          <div class="form-group"><button class="btn" onclick="signup()">Create account</button></div>
+        </div>
+      </section>
+
+      <!-- DASHBOARDS -->
+      <section id="dashboard" class="card" style="display:none">
+        <div id="dashboardContent"></div>
+      </section>
+
+      <!-- Live Votes -->
+      <section id="live" class="card" style="display:none">
+        <div class="space-between">
+          <div><h3>Live Votes</h3><div class="small">Simulated live vote feed and blockchain log</div></div>
+            <div style="display:flex;gap:8px;align-items:center"><div class="small">Last updated: <span id="votesLast">-</span></div><button id="toggleSimBtn" class="btn ghost" onclick="toggleAutoSim()">Pause Simulation</button></div>
+        </div>
+        <hr/>
+        <div class="grid-2">
+          <div>
+            <div class="card vote-card">
+              <div>
+                <div class="vote-buttons">
+                  <button class="btn" onclick="castVote('PARTY A')">Vote PARTY A</button>
+                  <button class="btn" onclick="castVote('PARTY B')">Vote PARTY B</button>
+                  <button class="btn" onclick="castVote('PARTY C')">Vote PARTY C</button>
+                </div>
+                <div style="margin-top:8px" class="small">Verified / Unverified votes are separated for simulation.</div>
+              </div>
+              <div style="width:100%;margin-top:12px">
+                <canvas id="votesBar"></canvas>
+                <canvas id="verifyPie" style="margin-top:12px"></canvas>
+              </div>
+            </div>
+
+            <div class="card" style="margin-top:12px">
+              <h4>Leaderboard</h4>
+              <div id="leaderboard"></div>
+            </div>
+          </div>
+          <div>
+            <div class="card" style="height:520px;overflow:auto">
+              <h4>Blockchain Log</h4>
+              <div id="blockLog"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Complaints -->
+      <section id="complaints" class="card" style="display:none">
+        <div class="space-between">
+          <h3>Complaints Tracking</h3>
+          <div class="search">
+            <input id="complaintSearch" placeholder="Search complaints..." oninput="filterComplaints()" />
+            <button class="btn" onclick="openComplaintModal()">Report Complaint</button>
+          </div>
+        </div>
+        <hr/>
+        <div id="complaintsList"></div>
+      </section>
+
+      <!-- Observer -->
+      <section id="observer" class="card" style="display:none">
+        <h3>Observer Booth Reports</h3>
+        <div class="form-group"><input id="boothId" placeholder="Booth ID"/></div>
+        <div class="form-group">
+          <select id="evmStatus"><option>Operational</option><option>Malfunction</option><option>Offline</option></select>
+        </div>
+        <div class="form-group"><input id="crowd" placeholder="Crowd (e.g., Low/Moderate/High)"/></div>
+        <div class="form-group"><textarea id="boothNotes" placeholder="Notes"></textarea></div>
+        <div class="form-group"><button class="btn" onclick="submitBooth()">Submit Report</button></div>
+        <h4>Latest Reports</h4>
+        <div id="boothList"></div>
+      </section>
+
+      <!-- Chat -->
+      <section id="chat" class="card" style="display:none">
+        <h3>Discussion</h3>
+        <div class="chat" id="chatBox"></div>
+        <div style="display:flex;gap:8px;margin-top:8px">
+          <input id="chatMsg" placeholder="Type message..."/>
+          <button class="btn" onclick="sendChat()">Send</button>
+        </div>
+      </section>
+
+      <!-- Settings -->
+      <section id="settings" class="card" style="display:none">
+        <h3>Settings</h3>
+        <div style="display:flex;gap:12px;align-items:center">
+          <div class="small">Theme</div>
+          <button class="btn ghost" onclick="toggleTheme()">Toggle Dark / Light</button>
+        </div>
+      </section>
+
+      <!-- Admin Complaints Modal (reused) -->
+      <div id="modalRoot" style="display:none"></div>
+
+    </main>
+  </div>
+
+  <script>
+    // Basic storage helpers
+    const ls = {get(k, fallback){try{return JSON.parse(localStorage.getItem(k)) ?? fallback}catch(e){return fallback}}, set(k,v){localStorage.setItem(k,JSON.stringify(v))}, rm(k){localStorage.removeItem(k)}}
+
+    // Seed demo data
+    function seed(){
+      if(!ls.get('users')){
+        ls.set('users',[{id:1,name:'Admin User',email:'admin@ems.local',password:'admin',role:'Admin',blocked:false},
+          {id:2,name:'Citizen One',email:'citizen@ems.local',password:'citizen',role:'Citizen',blocked:false},
+          {id:3,name:'Observer One',email:'observer@ems.local',password:'observer',role:'Election Observer',blocked:false},
+          {id:4,name:'Analyst One',email:'analyst@ems.local',password:'analyst',role:'Data Analyst',blocked:false}])
+      }
+      if(!ls.get('complaints')){
+        const now=Date.now();
+        ls.set('complaints',[{id:1,category:'Voting Machine',severity:'High',desc:'EVM stalled','location':'Ward 12','time':now-1000*60*60*24,status:'Pending'},{id:2,category:'Fights',severity:'Medium',desc:'Large crowd fighting near entrance','location':'Ward 7','time':now-1000*60*90,status:'Approved'}])
+      }
+      if(!ls.get('boothReports')) ls.set('boothReports',[])
+      if(!ls.get('votes')) ls.set('votes',{"PARTY A":120,"PARTY B":90,"PARTY C":75,verified:60,unverified:225})
+      if(!ls.get('blocks')) ls.set('blocks',[])
+      if(!ls.get('chat')) ls.set('chat',[])
+      // normalize older data if present
+      normalizeData()
+    }
+    seed()
+
+    // Normalize legacy keys from ABC/XYZ/IND to PARTY A/B/C and update blocks
+    function normalizeData(){
+      // votes
+      const votes=ls.get('votes',{})
+      let changed=false
+      if(votes['ABC']!==undefined){votes['PARTY A']=(votes['PARTY A']||0)+votes['ABC'];delete votes['ABC'];changed=true}
+      if(votes['XYZ']!==undefined){votes['PARTY B']=(votes['PARTY B']||0)+votes['XYZ'];delete votes['XYZ'];changed=true}
+      if(votes['IND']!==undefined){votes['PARTY C']=(votes['PARTY C']||0)+votes['IND'];delete votes['IND'];changed=true}
+      if(changed) ls.set('votes',votes)
+
+      // blocks
+      const blocks=ls.get('blocks',[])
+      let bc=false
+      blocks.forEach(b=>{
+        if(b.party==='ABC'){b.party='PARTY A';bc=true}
+        if(b.party==='XYZ'){b.party='PARTY B';bc=true}
+        if(b.party==='IND'){b.party='PARTY C';bc=true}
+      })
+      if(bc) ls.set('blocks',blocks)
+    }
+
+    // Navigation
+    function showSection(id){
+      // protect certain sections — require login
+      const protectedSections=['dashboard','live','complaints','observer','chat','settings']
+      const user=ls.get('loggedUser')
+      if(protectedSections.includes(id) && !user){alert('Please login to access this section');showSection('login');return}
+      document.querySelectorAll('main section').forEach(s=>s.style.display='none')
+      const el=document.getElementById(id)
+      if(el) el.style.display='block'
+      document.querySelectorAll('#mainNav button').forEach(b=>b.classList.toggle('active', b.dataset.section===id))
+      // custom behavior after showing
+      if(id==='dashboard') renderDashboard()
+      if(id==='live') renderLive()
+      if(id==='complaints') renderComplaints()
+      if(id==='observer') renderBoothList()
+      if(id==='chat') renderChat()
+    }
+
+    // Require authentication helper for actions
+    function requireAuth(actionLabel){
+      const user=ls.get('loggedUser')
+      if(!user){alert('Please login to '+actionLabel);showSection('login');return false}
+      return true
+    }
+
+    // Auth
+    function signup(){
+      const name=document.getElementById('suName').value.trim();
+      const email=document.getElementById('suEmail').value.trim();
+      const pw=document.getElementById('suPassword').value;
+      const role=document.getElementById('suRole').value;
+      if(!name||!email||!pw){alert('Please fill all fields');return}
+      const users=ls.get('users',[])
+      if(users.find(u=>u.email===email)){alert('Email exists');return}
+      const id=Date.now();
+      users.push({id,name,email,password:pw,role,blocked:false});
+      ls.set('users',users);
+      alert('Account created. You can login now.');
+      showSection('login')
+    }
+
+    function login(){
+      const email=document.getElementById('loginEmail').value.trim();
+      const pw=document.getElementById('loginPassword').value;
+      const users=ls.get('users',[])
+      const u=users.find(x=>x.email===email && x.password===pw)
+      if(!u){alert('Invalid credentials');return}
+      if(u.blocked){alert('User is blocked');return}
+      ls.set('loggedUser',{id:u.id,name:u.name,email:u.email})
+      ls.set('userRole',u.role)
+      alert('Welcome, '+u.name+' — role: '+u.role)
+      showSection('dashboard')
+      renderDashboard()
+      updateNavAuth()
+    }
+
+    function logout(){ls.rm('loggedUser');ls.rm('userRole');updateNavAuth();showSection('home')}
+
+    function updateNavAuth(){
+      const navAuth=document.getElementById('navAuth')
+      const user=ls.get('loggedUser')
+      if(user){navAuth.innerHTML=`<span class="small">${user.name} • ${ls.get('userRole')||''}</span> <button class="btn ghost" onclick="logout()">Logout</button>`}else{navAuth.innerHTML=`<button class="btn" onclick="showSection('login')">Login</button>`}
+      updateHomeButtons()
+    }
+
+    function updateHomeButtons(){
+      const user=ls.get('loggedUser')
+      const signupBtn=document.getElementById('openSignup')
+      const loginBtn=document.getElementById('homeLoginBtn')
+      if(user){ if(signupBtn) signupBtn.style.display='none'; if(loginBtn) loginBtn.style.display='none' }
+      else{ if(signupBtn) signupBtn.style.display='inline-block'; if(loginBtn) loginBtn.style.display='inline-block' }
+    }
+    updateNavAuth()
+
+    // Dashboard by role
+    function renderDashboard(){
+      const role=ls.get('userRole')
+      const container=document.getElementById('dashboardContent')
+      const user=ls.get('loggedUser')
+      if(!user){container.innerHTML='<div class="small">Please login to view dashboard.</div>';return}
+      if(role==='Admin'){renderAdmin(container)}
+      else if(role==='Citizen'){renderCitizen(container)}
+      else if(role==='Election Observer'){renderObserver(container)}
+      else if(role==='Data Analyst'){renderAnalyst(container)}
+      else container.innerHTML='<div>Unknown role</div>'
+    }
+
+    // Admin
+    function renderAdmin(container){
+      const users=ls.get('users',[])
+      const complaints=ls.get('complaints',[])
+      container.innerHTML=`<h3>Admin Dashboard</h3><div class="grid-2"><div>
+        <h4>Manage Users</h4><div id="adminUsers"></div>
+        <h4 style="margin-top:12px">Complaints</h4><div id="adminComplaints"></div>
+      </div><div>
+        <h4>Analytics</h4><canvas id="adminChart"></canvas>
+        <div style="margin-top:12px" class="card"><h4>Blockchain</h4><div class="small">Blocks stored: <span id="blockCount">0</span></div><div style="margin-top:8px" class="flex"><button class="btn" onclick="clearChain()">Clear Chain</button></div></div>
+      </div></div>`
+      const uRoot=document.getElementById('adminUsers')
+      uRoot.innerHTML=''
+      users.forEach(u=>{
+        const div=document.createElement('div');div.className='user-row';
+        div.innerHTML=`<div><strong>${u.name}</strong><div class="small">${u.email} • ${u.role}</div></div>
+          <div class="flex"><button class="btn ghost" onclick="toggleBlock(${u.id})">${u.blocked?'Unblock':'Block'}</button><button class="btn" onclick="deleteUser(${u.id})">Delete</button></div>`
+        uRoot.appendChild(div)
+      })
+      const aRoot=document.getElementById('adminComplaints')
+      aRoot.innerHTML=''
+      complaints.forEach(c=>{
+        const d=document.createElement('div');d.className='complaint';
+        d.innerHTML=`<div style="display:flex;justify-content:space-between"><div><strong>ID:${c.id} ${c.category}</strong><div class="small">${new Date(c.time).toLocaleString()}</div></div><div><span class="pill">${c.severity}</span></div></div>
+          <div style="margin-top:6px">${c.desc}</div>
+          <div style="margin-top:8px" class="flex">
+            <div class="small">Status: <strong>${c.status}</strong></div>
+            <div style="margin-left:auto"><button class="btn" onclick="openChangeStatusModal(${c.id})">Change status</button></div>
+          </div>`
+        aRoot.appendChild(d)
+      })
+
+      // small analytics demo
+      const ctx=document.getElementById('adminChart').getContext('2d')
+      // update block count
+      const bcEl=document.getElementById('blockCount'); if(bcEl) bcEl.innerText = (ls.get('blocks',[])||[]).length
+      new Chart(ctx,{type:'doughnut',data:{labels:['High','Medium','Low'],datasets:[{data:[complaints.filter(c=>c.severity==='High').length,complaints.filter(c=>c.severity==='Medium').length,complaints.filter(c=>c.severity==='Low').length],backgroundColor:['#dc3545','#ffc107','#198754']}]},options:{responsive:true}})
+    }
+    function toggleBlock(id){ if(ls.get('userRole')!=='Admin'){alert('Only Admins can perform this action');return} const users=ls.get('users',[]);const u=users.find(x=>x.id===id);u.blocked=!u.blocked;ls.set('users',users);renderDashboard()}
+    function deleteUser(id){ if(ls.get('userRole')!=='Admin'){alert('Only Admins can perform this action');return} if(!confirm('Delete user?'))return;ls.set('users',ls.get('users',[]).filter(x=>x.id!==id));renderDashboard()}
+    function changeStatus(id){
+      // kept for backward compatibility; open modal instead
+      openChangeStatusModal(id)
+    }
+
+    function openChangeStatusModal(id){
+      const complaints=ls.get('complaints',[]);
+      const c=complaints.find(x=>x.id===id);
+      if(!c) return; 
+      const modalRoot=document.getElementById('modalRoot');modalRoot.style.display='block';
+      modalRoot.innerHTML=`<div class="modal-backdrop"><div class="modal card"><h3>Change Complaint Status</h3>
+        <div class="form-group"><div class="small">ID: ${c.id} • ${c.category}</div></div>
+        <div class="form-group"><select id="newStatus"><option ${c.status==='Pending'?'selected':''}>Pending</option><option ${c.status==='Approved'?'selected':''}>Approved</option><option ${c.status==='Rejected'?'selected':''}>Rejected</option><option ${c.status==='Resolved'?'selected':''}>Resolved</option></select></div>
+        <div style="display:flex;gap:8px;justify-content:flex-end"><button class="btn ghost" onclick="closeModal()">Cancel</button><button class="btn" onclick="saveStatus(${c.id})">Save</button></div></div></div>`
+    }
+    function saveStatus(id){const val=document.getElementById('newStatus').value;const complaints=ls.get('complaints',[]);const c=complaints.find(x=>x.id===id);if(c){c.status=val;ls.set('complaints',complaints);closeModal();renderDashboard();alert('Status updated')} }
+
+    function clearChain(){ if(ls.get('userRole')!=='Admin'){alert('Only Admins can perform this action');return} if(!confirm('Clear blockchain log?')) return; ls.set('blocks',[]); renderBlocks(); renderDashboard(); alert('Blockchain cleared') }
+
+    // Citizen
+    function renderCitizen(container){
+      container.innerHTML=`<h3>Citizen Dashboard</h3><div class="grid-3"><div class="card"><h4>Report Issue</h4><p class="small">Report violations or problems.</p><button class="btn" onclick="openComplaintModal()">Report</button></div><div class="card"><h4>Your Tips</h4><ul><li>Carry ID</li><li>Follow officer instructions</li><li>Report issues promptly</li></ul></div><div class="card"><h4>Recent Complaints</h4><div id="citizenRecent"></div></div></div>`
+      const list=document.getElementById('citizenRecent');list.innerHTML=''
+      ls.get('complaints',[]).slice(-5).reverse().forEach(c=>{const d=document.createElement('div');d.className='complaint';d.innerHTML=`<strong>${c.category}</strong><div class="small">${new Date(c.time).toLocaleString()} • ${c.status}</div><div style="margin-top:6px">${c.desc}</div>`;list.appendChild(d)})
+    }
+
+    // Observer
+    function renderObserver(container){
+      container.innerHTML=`<h3>Observer Dashboard</h3><p class="small">Submit booth reports and view latest.</p><div id="observerReports"></div>`
+      renderBoothList()
+    }
+    function submitBooth(){
+      if(!requireAuth('submit a booth report')) return
+      const id=document.getElementById('boothId').value.trim();
+      const evm=document.getElementById('evmStatus').value;
+      const crowd=document.getElementById('crowd').value;
+      const notes=document.getElementById('boothNotes').value;
+      if(!id||!notes){alert('Provide booth id and notes');return}
+      const arr=ls.get('boothReports',[]);
+      arr.push({id:Date.now(),booth:id,evm,crowd,notes,time:Date.now()});
+      ls.set('boothReports',arr);
+      alert('Report submitted');
+      document.getElementById('boothId').value='';document.getElementById('boothNotes').value='';renderBoothList()
+    }
+    function renderBoothList(){const root=document.getElementById('boothList')||document.getElementById('observerReports');if(!root) return;root.innerHTML='';ls.get('boothReports',[]).slice(-10).reverse().forEach(r=>{const d=document.createElement('div');d.className='complaint';d.innerHTML=`<strong>Booth ${r.booth}</strong><div class="small">${new Date(r.time).toLocaleString()} • EVM: ${r.evm} • Crowd: ${r.crowd}</div><div style="margin-top:6px">${r.notes}</div>`;root.appendChild(d)})}
+
+    // Data Analyst
+    function renderAnalyst(container){
+      container.innerHTML=`<h3>Data Analyst Dashboard</h3><div style="display:grid;grid-template-columns:1fr 1fr;gap:12px"><div class="card"><h4>Complaints by Category</h4><canvas id="chartCat"></canvas></div><div class="card"><h4>Severity Distribution</h4><canvas id="chartSev"></canvas></div><div class="card"><h4>Verified vs Pending Votes</h4><canvas id="chartVerify"></canvas></div><div class="card"><h4>Complaints Timeline</h4><canvas id="chartTrend"></canvas></div></div>`
+      // build charts from data
+      const complaints=ls.get('complaints',[])
+      const byCat={}
+      complaints.forEach(c=>byCat[c.category]=(byCat[c.category]||0)+1)
+      const catCtx=document.getElementById('chartCat').getContext('2d')
+      new Chart(catCtx,{type:'bar',data:{labels:Object.keys(byCat),datasets:[{label:'Complaints',data:Object.values(byCat),backgroundColor:'#0b5ed7'}]}})
+
+      const sev=['High','Medium','Low'];const sevData=sev.map(s=>complaints.filter(c=>c.severity===s).length)
+      new Chart(document.getElementById('chartSev').getContext('2d'),{type:'pie',data:{labels:sev,datasets:[{data:sevData,backgroundColor:['#dc3545','#ffc107','#198754']}]}})
+
+      const votes=ls.get('votes',{}); new Chart(document.getElementById('chartVerify').getContext('2d'),{type:'bar',data:{labels:['Verified','Unverified'],datasets:[{data:[votes.verified||0,votes.unverified||0],backgroundColor:['#198754','#6c757d']}]}})
+
+      const groups={}
+      complaints.forEach(c=>{const d=new Date(c.time);const k=d.toISOString().slice(0,10);groups[k]=(groups[k]||0)+1})
+      new Chart(document.getElementById('chartTrend').getContext('2d'),{type:'line',data:{labels:Object.keys(groups),datasets:[{label:'Complaints',data:Object.values(groups),borderColor:'#0b5ed7',fill:false}]}})
+    }
+
+    // Complaints UI
+    function openComplaintModal(prefill){
+      if(!requireAuth('report a complaint')) return
+      const modalRoot=document.getElementById('modalRoot');modalRoot.style.display='block';
+      modalRoot.innerHTML=`<div class="modal-backdrop"><div class="modal card"><h3>Report Complaint</h3>
+        <div class="form-group"><select id="cCategory">
+            <option>Fake Voting</option>
+            <option>Malpractice</option>
+            <option>Fights</option>
+            <option>Voting Machine</option>
+            <option>Crowd</option>
+            <option>Other</option>
+          </select></div>
+        <div class="form-group"><select id="cSeverity"><option>High</option><option>Medium</option><option>Low</option></select></div>
+        <div class="form-group"><input id="cLocation" placeholder="Location"/></div>
+        <div class="form-group"><textarea id="cDesc" placeholder="Description"></textarea></div>
+        <div style="display:flex;gap:8px;justify-content:flex-end"><button class="btn ghost" onclick="closeModal()">Cancel</button><button class="btn" onclick="submitComplaint()">Submit</button></div></div></div>`
+    }
+    function closeModal(){document.getElementById('modalRoot').style.display='none';document.getElementById('modalRoot').innerHTML=''}
+    function submitComplaint(){
+      const cat=document.getElementById('cCategory').value.trim();const sev=document.getElementById('cSeverity').value;const loc=document.getElementById('cLocation').value.trim();const desc=document.getElementById('cDesc').value.trim();
+      if(!cat||!desc){alert('Category and description required');return}
+      const arr=ls.get('complaints',[]);const id=Date.now();arr.push({id,category:cat,severity:sev,desc,location:loc,time:Date.now(),status:'Pending'});ls.set('complaints',arr);closeModal();alert('Complaint submitted');renderComplaints();renderDashboard()
+    }
+
+    function renderComplaints(){
+      const q=document.getElementById('complaintSearch')?.value?.toLowerCase()||''
+      const root=document.getElementById('complaintsList');root.innerHTML=''
+      ls.get('complaints',[]).slice().reverse().forEach(c=>{
+        const d=document.createElement('div');d.className='complaint';if(q&&JSON.stringify(c).toLowerCase().includes(q)){d.classList.add('highlight')}
+        d.innerHTML=`<div style="display:flex;justify-content:space-between"><div><strong>ID:${c.id} ${c.category}</strong><div class="small">${new Date(c.time).toLocaleString()}</div></div><div><span class="pill">${c.severity}</span></div></div>
+          <div style="margin-top:6px">${highlightText(c.desc,q)}</div>
+          <div class="small" style="margin-top:8px">Location: ${c.location||'—'} • Status: <strong>${c.status}</strong></div>`
+        root.appendChild(d)
+      })
+    }
+    function highlightText(text,q){if(!q) return text;return text.replace(new RegExp('('+escapeRegExp(q)+')','ig'),'<span class="search-term">$1</span>')}
+    function escapeRegExp(s){return s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')}
+    function filterComplaints(){renderComplaints()}
+
+    // Chat
+    function renderChat(){const box=document.getElementById('chatBox');box.innerHTML='';ls.get('chat',[]).forEach(m=>{const b=document.createElement('div');b.className='bubble '+(m.sender===ls.get('loggedUser')?.name?'me':'other');b.innerHTML=`<div><strong>${m.sender}</strong></div><div>${m.text}</div><div class="small">${new Date(m.time).toLocaleTimeString()}</div>`;box.appendChild(b)})}
+    function sendChat(){
+      if(!requireAuth('send chat messages')) return
+      const txt=document.getElementById('chatMsg').value.trim();
+      if(!txt) return;
+      const user=ls.get('loggedUser')||{name:'Guest'};
+      const arr=ls.get('chat',[]);
+      arr.push({id:Date.now(),sender:user.name,text:txt,time:Date.now()});
+      ls.set('chat',arr);
+      document.getElementById('chatMsg').value='';renderChat()
+    }
+
+    // Theme
+    function toggleTheme(){const root=document.getElementById('app');const cur=root.getAttribute('data-theme');const next=cur==='light'?'dark':'light';root.setAttribute('data-theme',next);localStorage.setItem('theme',next)}
+    (function(){const t=localStorage.getItem('theme')||'light';document.getElementById('app').setAttribute('data-theme',t)})();
+
+    // Live Votes + blockchain log
+    let barChart, pieChart
+    async function renderLive(){
+      const votes=ls.get('votes',{});
+      document.getElementById('votesLast').innerText=new Date().toLocaleTimeString()
+      const ctx=document.getElementById('votesBar').getContext('2d')
+      if(barChart) barChart.data.datasets[0].data=[votes['PARTY A']||0,votes['PARTY B']||0,votes['PARTY C']||0],barChart.update();
+      else barChart=new Chart(ctx,{type:'bar',data:{labels:['PARTY A','PARTY B','PARTY C'],datasets:[{label:'Votes',data:[votes['PARTY A']||0,votes['PARTY B']||0,votes['PARTY C']||0],backgroundColor:['#0b5ed7','#198754','#ffc107']}]}})
+
+      const ctx2=document.getElementById('verifyPie').getContext('2d')
+      if(pieChart) pieChart.data.datasets[0].data=[votes.verified||0,votes.unverified||0],pieChart.update();
+      else pieChart=new Chart(ctx2,{type:'pie',data:{labels:['Verified','Unverified'],datasets:[{data:[votes.verified||0,votes.unverified||0],backgroundColor:['#198754','#6c757d']}]}})
+
+      await renderLeaderboard();
+      await renderBlocks();
+    }
+
+    async function castVote(party,verified=true){
+      if(!requireAuth('cast a vote')) return
+      const v=ls.get('votes',{});
+      v[party]=(v[party]||0)+1;
+      if(verified) v.verified=(v.verified||0)+1; else v.unverified=(v.unverified||0)+1;
+      ls.set('votes',v);
+      await addBlock(party);
+      renderLive();
+    }
+
+    // Random auto votes (simulation only) — do NOT force login by calling castVote
+    let autoSimInterval = null;
+    let autoSimRunning = false;
+    async function simulateAutoVote(){
+      const parties=['PARTY A','PARTY B','PARTY C'];
+      const p=parties[Math.floor(Math.random()*parties.length)];
+      const verified=Math.random()>0.5;
+      // directly update votes without requireAuth
+      const v=ls.get('votes',{});
+      v[p]=(v[p]||0)+1;
+      if(verified) v.verified=(v.verified||0)+1; else v.unverified=(v.unverified||0)+1;
+      ls.set('votes',v);
+      // add a block (no auth) and update UI if live section visible
+      await addBlock(p);
+      if(document.getElementById('live').style.display!=='none') renderLive();
+    }
+    function startAutoSim(){ if(autoSimInterval) return; autoSimInterval=setInterval(simulateAutoVote,3000); autoSimRunning=true; const btn=document.getElementById('toggleSimBtn'); if(btn) btn.innerText='Pause Simulation'}
+    function stopAutoSim(){ if(!autoSimInterval) return; clearInterval(autoSimInterval); autoSimInterval=null; autoSimRunning=false; const btn=document.getElementById('toggleSimBtn'); if(btn) btn.innerText='Resume Simulation'}
+    function toggleAutoSim(){ if(autoSimRunning) stopAutoSim(); else startAutoSim(); }
+    // start simulation by default
+    startAutoSim();
+
+    // Blockchain log
+    async function addBlock(party){
+      const blocks=ls.get('blocks',[]);
+      const prev=blocks.length?blocks[blocks.length-1].hash:'0';
+      const time=Date.now();
+      const votesObj=ls.get('votes');
+      const totalVotes=(votesObj['PARTY A']||0)+(votesObj['PARTY B']||0)+(votesObj['PARTY C']||0);
+      const data=party+time+totalVotes;
+      const hash=await sha1(data+Math.random());
+      const block={time,party,totalVotes,prev,hash};
+      blocks.push(block);
+      // keep blockchain small: store only last 20 blocks to avoid large localStorage
+      const maxBlocks = 20;
+      while(blocks.length > maxBlocks) blocks.shift();
+      ls.set('blocks',blocks);
+    }
+    function sha1(str){var buffer=new TextEncoder('utf-8').encode(str);return crypto.subtle.digest('SHA-1',buffer).then(buf=>{return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('')})}
+    function displayPartyName(p){
+      if(!p) return p;
+      const map={'ABC':'PARTY A','XYZ':'PARTY B','IND':'PARTY C','PARTY A':'PARTY A','PARTY B':'PARTY B','PARTY C':'PARTY C'};
+      return map[p]||p;
+    }
+
+    async function renderBlocks(){
+      const root=document.getElementById('blockLog');root.innerHTML='';
+      const blocks=ls.get('blocks',[]).slice().reverse();
+      for(const b of blocks){
+        const el=document.createElement('div');el.className='complaint';
+        const name=displayPartyName(b.party);
+        el.innerHTML=`<div style="display:flex;justify-content:space-between"><div><strong>${name}</strong><div class="small">${new Date(b.time).toLocaleString()}</div></div><div class="small">Total:${b.totalVotes}</div></div><div style="margin-top:8px;font-family:monospace;font-size:12px">Hash: ${b.hash}</div><div style="font-family:monospace;font-size:12px">Prev: ${b.prev}</div>`;
+        root.appendChild(el)
+      }
+      const bcEl=document.getElementById('blockCount'); if(bcEl) bcEl.innerText = (ls.get('blocks',[])||[]).length;
+    }
+
+    async function renderLeaderboard(){const root=document.getElementById('leaderboard');root.innerHTML='';const v=ls.get('votes',{});const arr=[['PARTY A',v['PARTY A']||0],['PARTY B',v['PARTY B']||0],['PARTY C',v['PARTY C']||0]].sort((a,b)=>b[1]-a[1]);arr.forEach(a=>{const d=document.createElement('div');d.className='user-row';const name=displayPartyName(a[0]);d.innerHTML=`<div><strong>${name}</strong><div class="small">${a[1]} votes</div></div><div><div class="pill">${arr[0][0]===a[0]?'Leader':''}</div></div>`;root.appendChild(d)})}
+
+    // Poll to update last updated timestamp live
+    setInterval(()=>{if(document.getElementById('live').style.display!=='none'){document.getElementById('votesLast').innerText=new Date().toLocaleTimeString()}},1000)
+
+    // Initial render for blocks (resolve async hashes)
+    (async function initBlocks(){const blocks=ls.get('blocks',[]);if(blocks.length){for(const b of blocks){if(!b.hash){b.hash=await sha1(b.party+b.time+b.totalVotes+Math.random())}}ls.set('blocks',blocks);await renderBlocks();}})()
+
+    // Chat demo seeding
+    if(!ls.get('chat')||ls.get('chat').length===0){ls.set('chat',[{id:1,sender:'Admin User',text:'Welcome to EMS chat',time:Date.now()-600000}])}
+
+    // expose for console
+    window.showSection=showSection;window.openComplaintModal=openComplaintModal;window.renderComplaints=renderComplaints;window.renderLive=renderLive;window.updateNavAuth=updateNavAuth;window.toggleTheme=toggleTheme;window.castVote=castVote
+
+  </script>
+</body>
+</html>
